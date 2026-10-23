@@ -10,7 +10,8 @@ celular, zoom de foto, vistos recentemente, newsletter real e WhatsApp.
 
 Documentação do catálogo: [como foi montado e como chegar a 100+ produtos](docs/catalogo.md) ·
 [planilha de custo x preço](docs/catalogo-produtos.csv) ·
-[pedido de produtos ao gerente da SIHI](docs/pedido-produtos-sihi.md).
+[pedido de produtos ao gerente da SIHI](docs/pedido-produtos-sihi.md) ·
+[**produtos baratos para vender caro e reajuste de preços**](docs/produtos-alta-margem.md).
 
 > **VOLT é um nome provisório.** Troque marca, textos e promessas em [src/config/site.ts](src/config/site.ts).
 

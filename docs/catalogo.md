@@ -44,6 +44,10 @@ afeta o mapeamento dos pedidos), estes entram na hora. Os códigos são o final 
 
 ## Como definimos o preço de venda
 
+> **Revisão de 23/10/2026:** os preços foram comparados com o mercado (Amazon Brasil) e 12 dos 24 produtos estão
+> abaixo do que se cobra por aí. Novos preços sugeridos em [produtos-alta-margem.md](produtos-alta-margem.md) e nas
+> colunas novas de [catalogo-produtos.csv](catalogo-produtos.csv). As faixas abaixo foram o ponto de partida.
+
 Faixas pelo custo do produto na SIHI (US$), no mesmo critério dos quatro primeiros produtos:
 
 | Custo (US$) | Preço (R$) | | Custo (US$) | Preço (R$) |

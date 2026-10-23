@@ -44,6 +44,37 @@ Copie e cole a mensagem abaixo (a SIHI atende em português, inglês e espanhol)
 >
 > Could you share a list (or publish to my account) with **at least 100 items** in these categories? Thank you!
 
+## Pedido de sourcing com lista específica (23/10/2026)
+
+Para **Service → Sourcing** (ou para o gerente de contas). Os links são anúncios de referência do AliExpress; a SIHI
+procura o mesmo item numa fábrica. A escolha e as contas estão em [produtos-alta-margem.md](produtos-alta-margem.md).
+
+> Olá! Quero estes produtos de fábrica, iguais aos anúncios de referência, com os mesmos requisitos da mensagem acima
+> (sem marca de terceiros, fotos limpas, cores em inglês padrão, tamanhos em letras e tabela de medidas em cm). Para
+> cada um, me passem o custo por unidade, o peso do pacote e o frete para o Brasil **com os impostos pagos no envio
+> (DDP)**:
+>
+> 1. Joelheira de compressão 7 mm, par (P a GG): https://pt.aliexpress.com/item/1005005538116235.html
+> 2. Cinto para hip thrust: https://pt.aliexpress.com/item/1005007502107203.html
+> 3. Kit 3 faixas elásticas de tecido (hip band): https://pt.aliexpress.com/item/1005008999724657.html
+> 4. Tornozeleira para polia, par: https://pt.aliexpress.com/item/1005008777248600.html
+> 5. Cinto de musculação lombar 15 cm: https://pt.aliexpress.com/item/1005007455901907.html
+> 6. Protetor de barra para agachamento: https://pt.aliexpress.com/item/1005005861109735.html
+> 7. Legging sem costura com franzido no bumbum (scrunch): https://pt.aliexpress.com/item/1005006784732012.html
+> 8. Short sem costura com franzido (scrunch): https://pt.aliexpress.com/item/1005009677311882.html
+> 9. Conjunto sem costura top + legging: https://pt.aliexpress.com/item/1005011865611577.html
+> 10. Macaquinho fitness manga curta: https://pt.aliexpress.com/item/1005006266282044.html
+> 11. Top esportivo com bojo removível: https://pt.aliexpress.com/item/1005010206859429.html
+> 12. Short-saia de treino: https://pt.aliexpress.com/item/1005004858887734.html
+> 13. Bermuda masculina 2 em 1: https://pt.aliexpress.com/item/1005008659198677.html
+> 14. Calça jogger masculina de treino: https://pt.aliexpress.com/item/1005006860855929.html
+> 15. Camisa de compressão manga longa masculina: https://pt.aliexpress.com/item/1005006995616976.html
+> 16. Regata cavada masculina: https://pt.aliexpress.com/item/1005008740559681.html
+> 17. Camiseta oversized masculina de algodão 300 g: https://pt.aliexpress.com/item/1005009059479391.html
+> 18. Strap de levantamento com munhequeira, par: https://pt.aliexpress.com/item/1005012986686393.html
+>
+> Se possível, os itens 7, 8, 9 e 11 da mesma fábrica, nas mesmas cores, para vender como conjunto. Obrigado!
+
 ## Depois que a SIHI liberar os produtos
 
 Eles aparecem em **My Products / Find Products**. Para cada um: *Publish to Store → escolha a loja → Product Edit*
