@@ -1,8 +1,9 @@
 import { RefreshIcon, TagIcon, TruckIcon, WindIcon } from "@/components/ui/icons";
 import { site } from "@/config/site";
-import { formatAmount } from "@/lib/promos";
+import { formatAmount, quantityDiscountLabel } from "@/lib/promos";
 
 export function TrustStrip() {
+  const bundle = quantityDiscountLabel();
   const items = [
     ...(site.freeShippingThreshold
       ? [
@@ -23,7 +24,9 @@ export function TrustStrip() {
           },
         ]
       : [{ Icon: TagIcon, title: "Pagamento seguro", text: "Checkout oficial da Shopify" }]),
-    { Icon: WindIcon, title: "Conforto em primeiro lugar", text: "Peças escolhidas para treinar com liberdade" },
+    bundle
+      ? { Icon: TagIcon, title: bundle, text: "O desconto entra sozinho no carrinho" }
+      : { Icon: WindIcon, title: "Conforto em primeiro lugar", text: "Peças escolhidas para treinar com liberdade" },
   ];
 
   return (

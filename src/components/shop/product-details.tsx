@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { PlusIcon, RefreshIcon, TruckIcon, WindIcon } from "@/components/ui/icons";
+import { PlusIcon, RefreshIcon, TagIcon, TruckIcon, WindIcon } from "@/components/ui/icons";
 import { site } from "@/config/site";
-import { formatAmount } from "@/lib/promos";
+import { formatAmount, quantityDiscountLabel } from "@/lib/promos";
 import type { Product } from "@/lib/shop/types";
 
 export function ProductHeader({ product }: { product: Product }) {
@@ -19,7 +19,9 @@ export function ProductHeader({ product }: { product: Product }) {
 }
 
 export function ProductBenefits() {
+  const bundle = quantityDiscountLabel();
   const items = [
+    ...(bundle ? [{ Icon: TagIcon, text: `${bundle}: o desconto entra sozinho no carrinho` }] : []),
     site.freeShippingThreshold
       ? { Icon: TruckIcon, text: `Frete grátis em compras acima de ${formatAmount(site.freeShippingThreshold)}` }
       : { Icon: TruckIcon, text: "Calcule o frete pelo CEP no carrinho" },

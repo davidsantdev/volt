@@ -20,6 +20,12 @@ export function pixLabel() {
   return site.pixDiscount > 0 ? `${Math.round(site.pixDiscount * 100)}% off no Pix` : null;
 }
 
+/** "Leve 2 e ganhe 10% off", quando o desconto automático por quantidade está ligado. */
+export function quantityDiscountLabel() {
+  const { minItems, percent } = site.quantityDiscount;
+  return minItems > 1 && percent > 0 ? `Leve ${minItems} e ganhe ${Math.round(percent * 100)}% off` : null;
+}
+
 export function installmentsLabel() {
   return site.maxInstallments > 1 ? `Até ${site.maxInstallments}x sem juros` : null;
 }
@@ -33,7 +39,7 @@ export function installmentsFor(price: Money) {
 
 /** Mensagens da barra do topo: promoções ativas primeiro, depois as fixas. */
 export function announcementMessages() {
-  return [freeShippingLabel(), pixLabel(), installmentsLabel(), ...site.announcement].filter(
+  return [freeShippingLabel(), quantityDiscountLabel(), pixLabel(), installmentsLabel(), ...site.announcement].filter(
     (message): message is string => Boolean(message),
   );
 }

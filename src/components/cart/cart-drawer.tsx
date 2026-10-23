@@ -10,6 +10,7 @@ import { Drawer } from "@/components/ui/drawer";
 import { BagIcon, CloseIcon } from "@/components/ui/icons";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { site } from "@/config/site";
+import { quantityDiscountLabel } from "@/lib/promos";
 import { valueLabel } from "@/lib/shop/labels";
 import type { CartLine } from "@/lib/shop/types";
 import { formatMoney, isOnSale, moneyFrom } from "@/lib/utils";
@@ -44,6 +45,36 @@ function FreeShippingProgress({ subtotal, currency }: { subtotal: number; curren
           style={{ width: `${percent}%` }}
         />
       </div>
+    </div>
+  );
+}
+
+/** "Leve mais 1 e ganhe 10%": o desconto em si é automático na Shopify (site.quantityDiscount). */
+function QuantityDiscountProgress({ quantity }: { quantity: number }) {
+  const { minItems, percent } = site.quantityDiscount;
+  if (!quantityDiscountLabel()) return null;
+  const missing = Math.max(minItems - quantity, 0);
+  const off = `${Math.round(percent * 100)}% de desconto`;
+  return (
+    <div className="border-b border-line px-5 py-4">
+      <p className="text-xs font-semibold">
+        {missing > 0 ? (
+          <>
+            Leve mais <strong className="font-extrabold">{missing === 1 ? "1 peça" : `${missing} peças`}</strong> e
+            ganhe {off}
+          </>
+        ) : (
+          <strong className="font-extrabold">Você ganhou {off}!</strong>
+        )}
+      </p>
+      <ol aria-hidden="true" className="mt-2.5 flex gap-1.5">
+        {Array.from({ length: minItems }, (_, index) => (
+          <li
+            key={index}
+            className={`h-2 flex-1 rounded-full transition-colors duration-500 ${index < quantity ? "bg-volt" : "bg-mist"}`}
+          />
+        ))}
+      </ol>
     </div>
   );
 }
@@ -301,6 +332,7 @@ export function CartDrawer() {
         ) : (
           <>
             {cart && <FreeShippingProgress subtotal={subtotal} currency={cart.subtotal.currencyCode} />}
+            {cart && <QuantityDiscountProgress quantity={cart.totalQuantity} />}
             <ul className="flex-1 divide-y divide-line overflow-y-auto px-5">
               {lines.map((line) => (
                 <Line key={line.id} line={line} />

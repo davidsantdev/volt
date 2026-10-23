@@ -74,6 +74,7 @@ loja a cumprir (CDC, art. 30). Ligue cada item **depois** de configurá-lo:
 | Pagamento com Pix e cartão | Shopify → Configurações → Pagamentos: um gateway brasileiro (Mercado Pago, Pagar.me, PagBank, Appmax…). Sem isso o checkout não recebe. | — |
 | Desconto no Pix | No gateway (ex.: "desconto para Pix") | `pixDiscount: 0.05` |
 | Parcelamento sem juros | No gateway | `maxInstallments: 3` |
+| "Leve 2 e ganhe 10%" | Descontos → criar desconto **automático** de porcentagem nos produtos, com quantidade mínima de 2 itens | `quantityDiscount: { minItems: 2, percent: 0.1 }` (barra do topo, página do produto e barra de progresso no carrinho) |
 | Frete grátis | Configurações → Frete e entrega → taxa "Frete grátis" com pedido mínimo. Hoje a loja cobra **R$ 22 (Padrão)** para SP, inclusive em pedidos acima de R$ 299. | `freeShippingThreshold: 299` |
 | Cupom de boas-vindas | Descontos → criar código (ex.: BEMVINDO10) | `newsletter: { discountLabel: "10% off", discountCode: "BEMVINDO10" }` |
 | Dados da empresa | Obrigatórios para quem vende online (Decreto 7.962/2013) | `legalName`, `cnpj` |

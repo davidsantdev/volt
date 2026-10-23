@@ -61,6 +61,12 @@ export const site = {
   pixDiscount: 0,
   /** Parcelas sem juros que o gateway oferece (ex.: 3). 0 ou 1 = não mostra parcelamento. */
   maxInstallments: 0,
+  /**
+   * "Leve 2 e ganhe 10%" (sobe o valor médio do pedido). Antes, crie em Shopify → Descontos um desconto
+   * AUTOMÁTICO de porcentagem nos produtos com requisito "Quantidade mínima de itens" = `minItems`; a Shopify o
+   * aplica sozinha no carrinho e no checkout. `percent` em fração (0.1 = 10%). 0 = desligado.
+   */
+  quantityDiscount: { minItems: 0, percent: 0 },
   /** Mensagens da barra do topo além das de frete grátis, Pix e parcelamento (que entram sozinhas quando ativas). */
   announcement: ["Devolução em até 7 dias", "Pagamento seguro pela Shopify"],
   /** Cupom de boas-vindas: crie o código em Shopify → Descontos antes de preencher (ex.: "10% off" / "BEMVINDO10"). */
