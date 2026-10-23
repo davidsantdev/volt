@@ -17,6 +17,7 @@ import {
   updateDiscountAction,
   type CartResult,
 } from "@/app/actions/cart";
+import { trackAddToCart } from "@/lib/analytics";
 import type { ArtSpec, Cart, CartLine, Money, SelectedOption, ShopImage } from "@/lib/shop/types";
 import { moneyFrom } from "@/lib/utils";
 
@@ -168,9 +169,17 @@ export function CartProvider({ shopify, children }: { shopify: boolean; children
 
   const addItem = useCallback(
     async ({ variantId, quantity = 1, preview }: AddItemInput) => {
+      const track = () =>
+        trackAddToCart({
+          currency: preview.unitPrice.currencyCode,
+          items: [{ id: variantId, title: preview.productTitle, price: Number(preview.unitPrice.amount), quantity }],
+        });
       if (shopify) {
         const ok = await run(() => addToCartAction(variantId, quantity));
-        if (ok) setIsOpen(true);
+        if (ok) {
+          setIsOpen(true);
+          track();
+        }
         return ok;
       }
       setCart((current) => {
@@ -190,6 +199,7 @@ export function CartProvider({ shopify, children }: { shopify: boolean; children
         return buildDemoCart([...lines, line]);
       });
       setIsOpen(true);
+      track();
       return true;
     },
     [shopify, run],

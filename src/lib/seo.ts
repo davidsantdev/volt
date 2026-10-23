@@ -22,7 +22,7 @@ export function pageMetadata({
   noindex?: boolean;
 }): Metadata {
   const images = [image ?? defaultImage];
-  // Se o título já traz a marca, não deixa o template acrescentar "| VOLT" de novo.
+  // Se o título já traz a marca, não deixa o template acrescentar "| Fitnex" de novo.
   const hasBrand = title.toLowerCase().includes(site.name.toLowerCase());
   return {
     title: hasBrand ? { absolute: title } : title,

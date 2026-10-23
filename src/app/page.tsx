@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CategoryTiles } from "@/components/home/category-tiles";
+import { Deals } from "@/components/home/deals";
 import { Editorial } from "@/components/home/editorial";
 import { Faq } from "@/components/home/faq";
 import { Hero } from "@/components/home/hero";
@@ -20,6 +21,7 @@ export default function HomePage() {
       <SetupNotice />
       <Hero />
       <TrustStrip />
+      <Deals />
       <TopSelling />
       <CategoryTiles />
       <Editorial />

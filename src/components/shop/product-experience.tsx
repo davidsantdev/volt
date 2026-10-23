@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { CloseIcon } from "@/components/ui/icons";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { site } from "@/config/site";
+import { trackViewItem } from "@/lib/analytics";
 import { installmentsFor } from "@/lib/promos";
 import { colorInfo, colorLabel, isColorOption, optionLabel, sizeLabel } from "@/lib/shop/labels";
 import type { ArtSpec, Colorway, Product, ShopImage, Variant } from "@/lib/shop/types";
@@ -292,6 +293,13 @@ export function ProductExperience({
   // Barra fixa de compra no celular: aparece quando o botão principal sai da tela (e some sobre o rodapé).
   const [buyInView, setBuyInView] = useState(true);
   const [footerInView, setFooterInView] = useState(false);
+
+  useEffect(() => {
+    trackViewItem({
+      currency: product.price.currencyCode,
+      items: [{ id: product.id, title: product.title, price: Number(product.price.amount) }],
+    });
+  }, [product]);
 
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;

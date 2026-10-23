@@ -10,6 +10,7 @@ import { Drawer } from "@/components/ui/drawer";
 import { BagIcon, CloseIcon } from "@/components/ui/icons";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { site } from "@/config/site";
+import { trackBeginCheckout } from "@/lib/analytics";
 import { quantityDiscountLabel } from "@/lib/promos";
 import { valueLabel } from "@/lib/shop/labels";
 import type { CartLine } from "@/lib/shop/types";
@@ -385,6 +386,17 @@ export function CartDrawer() {
               {cart?.checkoutUrl ? (
                 <a
                   href={cart.checkoutUrl}
+                  onClick={() =>
+                    trackBeginCheckout({
+                      currency: cart.total.currencyCode,
+                      items: cart.lines.map((line) => ({
+                        id: line.variantId,
+                        title: line.productTitle,
+                        price: Number(line.unitPrice.amount),
+                        quantity: line.quantity,
+                      })),
+                    })
+                  }
                   aria-disabled={isPending}
                   className={buttonClasses({ size: "lg", variant: "solid", className: "mt-4 w-full" })}
                 >

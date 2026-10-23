@@ -529,7 +529,7 @@ export function mockCollectionIndex() {
 
 const pages: Record<string, { title: string; body: string }> = {
   sobre: {
-    title: "Sobre a VOLT",
+    title: `Sobre a ${site.name}`,
     body: `<p>A ${site.name} nasceu de uma ideia simples: roupa de treino precisa ser confortável de verdade, do primeiro ao último exercício.</p>
 <p>Escolhemos tecidos leves e respiráveis, costuras que não marcam e modelagens que acompanham o corpo em movimento, para você pensar só no treino.</p>
 <p><em>Texto de exemplo: conte aqui a história da sua marca.</em></p>`,

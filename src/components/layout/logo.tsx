@@ -15,7 +15,7 @@ export function Logo({ className, tone = "dark" }: { className?: string; tone?: 
       )}
     >
       <BoltIcon className="size-[1.15em] -rotate-6 text-volt" />
-      <span>{site.name}</span>
+      <span className="uppercase">{site.name}</span>
     </Link>
   );
 }

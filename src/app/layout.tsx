@@ -4,6 +4,7 @@ import "./globals.css";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
+import { CookieConsent } from "@/components/layout/cookie-consent";
 import { Footer } from "@/components/layout/footer";
 import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 import { Header } from "@/components/layout/header";
@@ -135,6 +136,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <CartDrawer />
           <WhatsAppButton />
         </CartProvider>
+        <CookieConsent />
         <JsonLd data={organization} />
       </body>
     </html>

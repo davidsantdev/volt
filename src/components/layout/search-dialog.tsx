@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, useTransition, type FormEvent } from "reac
 import { suggestAction, type Suggestion } from "@/app/actions/search";
 import { Drawer } from "@/components/ui/drawer";
 import { CloseIcon, SearchIcon } from "@/components/ui/icons";
+import { trackSearch } from "@/lib/analytics";
 import { formatMoney } from "@/lib/utils";
 
 /**
@@ -47,6 +48,7 @@ export function SearchDialog() {
     event.preventDefault();
     if (!query) return;
     close();
+    trackSearch(query);
     router.push(`/busca?q=${encodeURIComponent(query)}`);
   }
 

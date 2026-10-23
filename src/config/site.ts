@@ -25,7 +25,7 @@ if (
 }
 
 export const site = {
-  name: "VOLT",
+  name: "Fitnex",
   /** Razão social e CNPJ (ou CPF de MEI): quem vende online deve exibir no site (Decreto 7.962/2013). */
   legalName: "",
   cnpj: "",
@@ -37,7 +37,7 @@ export const site = {
   /** Imagem de compartilhamento (1200×630) em /public. */
   ogImage: "/og.jpg",
 
-  title: "VOLT | Roupas de academia com conforto e performance",
+  title: "Fitnex | Roupas de academia com conforto e performance",
   tagline: "Roupas de academia com conforto de verdade",
   description:
     "Tops, shorts, conjuntos, moletons, jaquetas e acessórios de academia, femininos e masculinos. Treine com mais conforto, estilo e liberdade de movimento.",
@@ -101,6 +101,8 @@ export const site = {
    */
   nav: [
     { title: "Loja", href: "/produtos" },
+    { title: "Leggings", href: "/colecoes/leggings" },
+    { title: "Regatas", href: "/colecoes/regatas" },
     { title: "Feminino", href: "/colecoes/feminino" },
     { title: "Masculino", href: "/colecoes/masculino" },
     { title: "Lançamentos", href: "/colecoes/lancamentos" },
@@ -110,7 +112,7 @@ export const site = {
 
   /** Páginas institucionais (crie em Shopify > Páginas, com esses handles). */
   pages: [
-    { title: "Sobre a VOLT", handle: "sobre" },
+    { title: "Sobre a Fitnex", handle: "sobre" },
     { title: "Entregas e prazos", handle: "entregas" },
     { title: "Trocas e devoluções", handle: "trocas-e-devolucoes" },
     { title: "Política de privacidade", handle: "privacidade" },

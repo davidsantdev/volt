@@ -8,6 +8,7 @@ import type {
   ArtSpec,
   Collection,
   CollectionWithProducts,
+  Money,
   PageContent,
   Product,
   ProductSort,
@@ -251,6 +252,27 @@ export async function getPhotos(picks: PhotoPick[]): Promise<Photo[]> {
     .slice(0, picks.length - found.length)
     .map(productPhoto);
   return [...found, ...extra];
+}
+
+export type Deal = { title: string; href: string | null; from: Money; products: ProductSummary[] };
+
+/** Vitrines de preço baixo da home (merch.deals): só produtos disponíveis, do mais barato ao mais caro. */
+export async function getDeals(): Promise<Deal[]> {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag("products", "collections");
+  const [products, collections] = await Promise.all([getProducts(), getCollections()]);
+  const handles = new Set(collections.map((collection) => collection.handle));
+  const byPrice = products
+    .filter((product) => product.availableForSale)
+    .sort((a, b) => Number(a.price.amount) - Number(b.price.amount));
+  return merch.deals.flatMap((deal) => {
+    const type = deal.type.toLowerCase();
+    const items = byPrice.filter((product) => product.productType.trim().toLowerCase() === type);
+    if (items.length < 2) return [];
+    const href = handles.has(deal.collection) ? `/colecoes/${deal.collection}` : null;
+    return [{ title: deal.title, href, from: items[0].price, products: items.slice(0, 12) }];
+  });
 }
 
 export type CategoryTile = { handle: string; title: string; href: string; photo: Photo | null };

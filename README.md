@@ -1,4 +1,4 @@
-# VOLT — loja de roupas de academia (Next.js + Shopify)
+# Fitnex — loja de roupas de academia (Next.js + Shopify)
 
 Loja virtual *headless*: o catálogo, o carrinho, o checkout e os pedidos ficam na **Shopify**; este projeto é a
 vitrine em **Next.js 16**, feita para velocidade e SEO. Os produtos vêm de fornecedores de **dropshipping** conectados
@@ -15,7 +15,7 @@ Documentação do catálogo: [como foi montado e como chegar a 100+ produtos](do
 [pedido de produtos ao gerente da SIHI](docs/pedido-produtos-sihi.md) ·
 [**produtos baratos para vender caro e reajuste de preços**](docs/produtos-alta-margem.md).
 
-> **VOLT é um nome provisório.** Troque marca, textos e promessas em [src/config/site.ts](src/config/site.ts).
+> Marca, textos e promessas da loja ficam em [src/config/site.ts](src/config/site.ts).
 
 ## Rodando
 

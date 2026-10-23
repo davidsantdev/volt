@@ -9,6 +9,9 @@
 
 export type PhotoPick = { product: string; photo?: string };
 
+/** Vitrine de preço baixo: produtos com este tipo (Shopify → Produto → Tipo de produto); `collection` é o "Ver todas". */
+export type DealPick = { title: string; type: string; collection: string };
+
 export const merch = {
   /**
    * Ordem dos "Destaques" da home enquanto não existir a coleção "Mais vendidos" (que passa a valer sozinha).
@@ -24,6 +27,15 @@ export const merch = {
     "jaqueta-fitness-feminina-ziper-manga-longa",
     "bolsa-academia-viagem-couro-sintetico-alca-ombro",
   ] as string[],
+
+  /**
+   * Vitrines de preço baixo logo abaixo do topo da home, do mais barato ao mais caro, com o "A partir de" tirado do
+   * menor preço. Cada uma só aparece com 2 produtos ou mais; o "Ver todas" só aparece se a coleção existir.
+   */
+  deals: [
+    { title: "Leggings", type: "Leggings", collection: "leggings" },
+    { title: "Regatas", type: "Regatas", collection: "regatas" },
+  ] satisfies DealPick[],
 
   /** Topo da home: fotos de modelo, recortadas na vertical (no celular aparece só a primeira). */
   hero: [
