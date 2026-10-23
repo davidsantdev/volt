@@ -453,6 +453,23 @@ export async function searchCatalog(term: string) {
   return data.search.nodes.filter((node) => node.handle).map(mapProductSummary);
 }
 
+/** Sugestões enquanto o cliente digita (casa prefixos: "reg" acha "Regata"). */
+export async function predictiveSearchProducts(term: string) {
+  const data = await shopifyFetch<{ predictiveSearch: { products: GqlProduct[] } | null }>(
+    /* GraphQL */ `
+      ${CARD_FRAGMENTS}
+      query Predictive($term: String!, ${CONTEXT_VARS}) ${IN_CONTEXT} {
+        predictiveSearch(query: $term, limit: 6, limitScope: EACH, types: [PRODUCT]) {
+          products { ...ProductCardFields }
+        }
+      }
+    `,
+    { term },
+    { context: true },
+  );
+  return (data.predictiveSearch?.products ?? []).filter((node) => node.handle).map(mapProductSummary);
+}
+
 /* -------------------------------------------------------------------------- */
 /* Coleções                                                                   */
 /* -------------------------------------------------------------------------- */

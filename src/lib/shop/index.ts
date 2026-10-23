@@ -101,6 +101,17 @@ export async function searchProducts(term: string): Promise<ProductSummary[]> {
   return isShopifyConfigured() ? shopify.searchCatalog(query) : mock.mockSearch(query);
 }
 
+/** Até 6 sugestões para a busca instantânea do cabeçalho. */
+export async function suggestProducts(term: string): Promise<ProductSummary[]> {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("products");
+  const query = term.trim().slice(0, 60);
+  if (query.length < 2) return [];
+  if (!isShopifyConfigured()) return mock.mockSearch(query).slice(0, 6);
+  return (await shopify.predictiveSearchProducts(query)).slice(0, 6);
+}
+
 export async function getCollections(): Promise<Collection[]> {
   "use cache";
   cacheLife("catalog");

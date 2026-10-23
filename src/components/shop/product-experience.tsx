@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { site } from "@/config/site";
 import { installmentsFor } from "@/lib/promos";
-import { colorInfo, colorLabel, optionLabel, sizeLabel } from "@/lib/shop/labels";
+import { colorInfo, colorLabel, isColorOption, optionLabel, sizeLabel } from "@/lib/shop/labels";
 import type { ArtSpec, Colorway, Product, ShopImage, Variant } from "@/lib/shop/types";
 import { cn, discountPercent, formatMoney, moneyFrom } from "@/lib/utils";
 
@@ -17,13 +17,6 @@ type Selection = Record<string, string>;
 type Tone = "mist" | "volt" | "lime" | "ink";
 type Slide = { image: ShopImage | null; art?: ArtSpec; tone: Tone };
 
-// "颜色" é o nome chinês da opção de cor que alguns fornecedores deixam na Shopify.
-const COLOR_OPTION = /^(cor|color|colour|颜色|颜色分类)$/i;
-
-/** Opção de cor pelo nome ou, quando o fornecedor a chamou de outra coisa ("Specifications"), porque todos os valores são cores conhecidas. */
-function isColorOption(option: { name: string; values: string[] }) {
-  return COLOR_OPTION.test(option.name) || (option.values.length > 0 && option.values.every((value) => colorInfo(value)));
-}
 
 const TONE_CLASS: Record<Tone, string> = {
   mist: "bg-mist",

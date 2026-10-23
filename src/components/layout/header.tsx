@@ -2,7 +2,8 @@ import Link from "next/link";
 import { CartButton } from "@/components/layout/cart-button";
 import { Logo } from "@/components/layout/logo";
 import { MobileNav } from "@/components/layout/mobile-nav";
-import { SearchIcon, UserIcon } from "@/components/ui/icons";
+import { SearchDialog } from "@/components/layout/search-dialog";
+import { UserIcon } from "@/components/ui/icons";
 import { getMenu } from "@/lib/shop";
 
 const accountUrl = process.env.NEXT_PUBLIC_ACCOUNT_URL;
@@ -34,13 +35,7 @@ export async function Header() {
         <Logo />
 
         <div className="flex items-center justify-end gap-2">
-          <Link
-            href="/busca"
-            aria-label="Buscar produtos"
-            className="grid size-11 place-items-center rounded-full text-ink transition-colors hover:bg-mist"
-          >
-            <SearchIcon className="size-[22px]" />
-          </Link>
+          <SearchDialog />
           {accountUrl ? (
             <a
               href={accountUrl}

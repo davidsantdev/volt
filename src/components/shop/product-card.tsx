@@ -2,8 +2,31 @@ import Link from "next/link";
 import { ProductImage } from "@/components/art/product-image";
 import { Price } from "@/components/shop/price";
 import { QuickAdd } from "@/components/shop/quick-add";
+import { colorInfo, colorLabel, isColorOption } from "@/lib/shop/labels";
 import type { ProductSummary } from "@/lib/shop/types";
 import { cn, discountPercent } from "@/lib/utils";
+
+/** Bolinhas das cores disponíveis (até 5) e "+N"; só quando há mais de uma cor. */
+function ColorDots({ product }: { product: ProductSummary }) {
+  const option = product.options.find(isColorOption);
+  if (!option || option.values.length < 2) return null;
+  const shown = option.values.slice(0, 5);
+  const extra = option.values.length - shown.length;
+  return (
+    <p className="flex items-center gap-1.5 px-4 sm:px-5" aria-label={`${option.values.length} cores`}>
+      {shown.map((value) => (
+        <span
+          key={value}
+          title={colorLabel(value)}
+          aria-hidden="true"
+          className="size-3 rounded-full border border-black/20"
+          style={{ backgroundColor: colorInfo(value)?.hex ?? "#d9d9d9" }}
+        />
+      ))}
+      {extra > 0 && <span aria-hidden="true" className="text-[11px] font-bold text-muted">+{extra}</span>}
+    </p>
+  );
+}
 
 export type CardTone = "white" | "mist" | "volt" | "ink";
 
@@ -68,6 +91,7 @@ export function ProductCard({
 
       <QuickAdd product={product} />
 
+      <ColorDots product={product} />
       <div className="flex flex-col items-start gap-1.5 px-4 pb-4 pt-1 sm:flex-row sm:items-end sm:justify-between sm:gap-3 sm:px-5 sm:pb-5">
         <h3 className="min-w-0 text-[11px] font-extrabold uppercase leading-snug tracking-[0.06em] sm:text-xs">
           <Link

@@ -119,6 +119,18 @@ export function colorLabel(value: string) {
   return colorInfo(value)?.label ?? value;
 }
 
+// "颜色" é o nome chinês da opção de cor que alguns fornecedores deixam na Shopify.
+const COLOR_OPTION = /^(cor|color|colour|颜色|颜色分类)$/i;
+
+/** Opção de cor pelo nome ou, quando o fornecedor a chamou de outra coisa ("Specifications"), porque todos os valores são cores conhecidas. */
+export function isColorOption(option: { name: string; values: string[] }) {
+  return COLOR_OPTION.test(option.name) || (option.values.length > 0 && option.values.every((value) => colorInfo(value)));
+}
+
+export function isSizeOption(option: { name: string; values: string[] }) {
+  return !isColorOption(option) && optionLabel(option.name) === "Tamanho";
+}
+
 const SIZE_LABELS: Record<string, string> = {
   onesize: "Único",
   freesize: "Único",
