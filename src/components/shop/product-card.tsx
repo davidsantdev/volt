@@ -15,7 +15,8 @@ function ColorDots({ product }: { product: ProductSummary }) {
   const shown = option.values.slice(0, 5);
   const extra = option.values.length - shown.length;
   return (
-    <p className="flex items-center gap-1.5" aria-label={`${option.values.length} cores`}>
+    <p className="flex items-center gap-1.5">
+      <span className="sr-only">{option.values.length} cores</span>
       {shown.map((value) => (
         <span
           key={value}

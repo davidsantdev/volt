@@ -225,11 +225,22 @@ type GqlProduct = {
   collections?: { nodes: { handle: string; title: string }[] };
 };
 
+/**
+ * Fornecedores gravam o nome do arquivo como texto alternativo ("O1CN01…-cib.jpg"), o que não descreve a foto
+ * para o Google nem para leitores de tela: nesse caso o site usa o nome do produto.
+ */
+function usefulAlt(alt?: string | null) {
+  const text = alt?.trim();
+  if (!text) return null;
+  if (/\.(jpe?g|png|webp|gif|avif)$/i.test(text) || (!/\s/.test(text) && text.length > 20)) return null;
+  return text;
+}
+
 function mapImage(image?: GqlImage | null): ShopImage | null {
   if (!image) return null;
   return {
     url: image.url,
-    altText: image.altText ?? null,
+    altText: usefulAlt(image.altText),
     width: image.width ?? 1000,
     height: image.height ?? 1000,
   };

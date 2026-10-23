@@ -23,6 +23,7 @@ export function CategoryTileLink({
       {tile.photo && (
         <ShopPhoto
           photo={tile.photo}
+          alt=""
           tone={index}
           priority={priority}
           sizes={sizes}

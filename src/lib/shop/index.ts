@@ -32,7 +32,10 @@ export async function getProducts(sort: ProductSort = "default"): Promise<Produc
   return isShopifyConfigured() ? shopify.listProducts(sort) : mock.mockListProducts(sort);
 }
 
-/** Destaques da home: usa a coleção especial se existir, senão ordena o catálogo. */
+/**
+ * Destaques da home: usa a coleção especial se existir. Sem "Mais vendidos" (loja sem vendas ainda), os destaques
+ * seguem a curadoria de src/config/merch.ts e depois o catálogo; "Lançamentos" cai para os mais novos.
+ */
 export async function getFeaturedProducts(
   kind: "best" | "new",
   limit = 8,
@@ -50,10 +53,16 @@ export async function getFeaturedProducts(
   }
 
   const sort: ProductSort = kind === "best" ? "default" : "newest";
+  const curated = kind === "best" ? merch.featured : [];
   const products = isShopifyConfigured()
-    ? await shopify.listProducts(sort, limit)
+    ? await shopify.listProducts(sort, curated.length > 0 ? undefined : limit)
     : mock.mockListProducts(sort);
-  return products.slice(0, limit);
+  if (curated.length === 0) return products.slice(0, limit);
+  const rank = (product: ProductSummary) => {
+    const index = curated.indexOf(product.handle);
+    return index === -1 ? curated.length : index;
+  };
+  return [...products].sort((a, b) => rank(a) - rank(b)).slice(0, limit);
 }
 
 export async function getProduct(handle: string): Promise<Product | null> {

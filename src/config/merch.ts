@@ -10,6 +10,21 @@
 export type PhotoPick = { product: string; photo?: string };
 
 export const merch = {
+  /**
+   * Ordem dos "Destaques" da home enquanto não existir a coleção "Mais vendidos" (que passa a valer sozinha).
+   * Primeiro os produtos com foto de modelo; os que não estiverem aqui vêm depois, na ordem da Shopify.
+   */
+  featured: [
+    "conjunto-fitness-feminino-top-manga-longa-legging",
+    "camiseta-esportiva-masculina-modal-secagem-rapida",
+    "short-ciclista-fitness-feminino-cintura-alta",
+    "conjunto-esportivo-feminino-casaco-gola-alta-calca-pantalona",
+    "moletom-masculino-ziper-capuz",
+    "top-esportivo-feminino-costas-nadador-alta-sustentacao",
+    "jaqueta-fitness-feminina-ziper-manga-longa",
+    "bolsa-academia-viagem-couro-sintetico-alca-ombro",
+  ] as string[],
+
   /** Topo da home: fotos de modelo, recortadas na vertical (no celular aparece só a primeira). */
   hero: [
     { product: "conjunto-fitness-feminino-top-manga-longa-legging", photo: "O1CN01eo7JOA1cUDuUo3ZkC" },

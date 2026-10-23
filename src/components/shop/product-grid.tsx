@@ -99,6 +99,8 @@ export function ProductGrid({
 
   return (
     <div>
+      {/* Os cards usam <h3>; sem este título a página pularia do <h1> direto para eles. */}
+      <h2 className="sr-only">Produtos</h2>
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           {facets.length > 0 && (

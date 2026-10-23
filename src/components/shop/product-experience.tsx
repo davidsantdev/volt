@@ -227,7 +227,7 @@ function Gallery({
             >
               <SlideMedia
                 slide={slide}
-                alt={title}
+                alt={index === 0 ? title : `${title} — foto ${index + 1}`}
                 priority={index === 0}
                 sizes={wide ? "(min-width: 1024px) 55vw, 100vw" : "(min-width: 1024px) 28vw, 100vw"}
               />

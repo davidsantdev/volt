@@ -14,6 +14,7 @@ export function ShopPhoto({
   sizes,
   priority = false,
   tone = 0,
+  alt,
   className,
 }: {
   photo: Photo;
@@ -21,13 +22,15 @@ export function ShopPhoto({
   priority?: boolean;
   /** Índice da cor de fundo da ilustração (modo demonstração). */
   tone?: number;
+  /** "" quando a foto está num link que já diz o mesmo em texto (ex.: o nome da categoria). */
+  alt?: string;
   className?: string;
 }) {
   if (photo.image) {
     return (
       <Image
         src={photo.image.url}
-        alt={photo.alt}
+        alt={alt ?? photo.alt}
         fill
         sizes={sizes}
         loading={priority ? "eager" : "lazy"}
