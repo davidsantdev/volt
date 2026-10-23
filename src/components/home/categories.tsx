@@ -7,7 +7,7 @@ import { getCollections } from "@/lib/shop";
 export async function Categories() {
   const collections = (await getCollections())
     .filter((collection) => !site.collections.hidden.includes(collection.handle))
-    .slice(0, 8);
+    .slice(0, 12);
   if (collections.length === 0) return null;
 
   // Completa a última linha com células vazias para a grade (que usa gap-px) fechar certinho.

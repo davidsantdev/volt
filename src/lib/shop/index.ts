@@ -105,7 +105,13 @@ export async function getCollections(): Promise<Collection[]> {
   "use cache";
   cacheLife("catalog");
   cacheTag("collections");
-  return isShopifyConfigured() ? shopify.fetchCollections() : mock.mockCollections();
+  const collections = isShopifyConfigured() ? await shopify.fetchCollections() : mock.mockCollections();
+  // Feminino e Masculino primeiro; o resto mantém a ordem original (sort estável).
+  const rank = (handle: string) => {
+    const index = site.collections.priority.indexOf(handle);
+    return index === -1 ? site.collections.priority.length : index;
+  };
+  return [...collections].sort((a, b) => rank(a.handle) - rank(b.handle));
 }
 
 export async function getCollection(handle: string): Promise<CollectionWithProducts | null> {

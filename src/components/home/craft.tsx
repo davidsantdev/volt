@@ -38,8 +38,8 @@ export function Craft() {
               Roupas de treino feitas para o seu ritmo
             </h2>
             <p className="mt-3 max-w-xs text-[13px] leading-relaxed text-ink-soft">
-              Tecidos leves e respiráveis, costuras planas que não marcam e modelagens que acompanham o corpo em
-              movimento. Cada peça é pensada para você esquecer a roupa e focar no treino.
+              Peças para treinar com conforto e liberdade de movimento, com cores, tamanhos e medidas descritos em cada
+              página para você comprar com segurança.
             </p>
           </div>
 
@@ -65,11 +65,11 @@ export function Craft() {
 
           <div className="md:self-end md:pb-2">
             <h3 className="text-lg font-extrabold uppercase leading-snug tracking-[-0.01em] sm:text-xl">
-              Conforto testado
+              Escolhidas a dedo
             </h3>
             <p className="mt-3 max-w-xs text-[13px] leading-relaxed text-ink-soft">
-              Da primeira série ao último alongamento, a {site.name} existe para a sua roupa nunca ser o motivo de
-              parar. Peças que secam rápido, não apertam e mantêm o caimento treino após treino.
+              Da primeira série ao último alongamento, a {site.name} quer que a sua roupa nunca seja o motivo de parar.
+              Cada peça entra na loja depois de uma curadoria de modelagem, cores e fotos.
             </p>
           </div>
         </div>

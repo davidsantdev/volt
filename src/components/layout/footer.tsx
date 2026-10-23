@@ -19,7 +19,7 @@ export async function Footer() {
   const [allCollections, { newHref, bestHref }] = await Promise.all([getCollections(), getSpecialLinks()]);
   const collections = allCollections
     .filter((collection) => !site.collections.hidden.includes(collection.handle))
-    .slice(0, 6);
+    .slice(0, 8);
 
   const social = [
     { href: site.social.instagram, label: "Instagram", Icon: InstagramIcon },

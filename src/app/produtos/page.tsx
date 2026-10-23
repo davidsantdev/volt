@@ -6,9 +6,9 @@ import { pageMetadata, productListJsonLd } from "@/lib/seo";
 import { getProducts } from "@/lib/shop";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Roupas de academia: leggings, tops, shorts e mais",
+  title: "Roupas de academia: tops, shorts, conjuntos e mais",
   description:
-    "Veja todas as roupas de academia: leggings, tops, shorts, regatas e moletons com tecido respirável, toque macio e muito conforto para treinar.",
+    "Veja todas as roupas de academia: tops, shorts, conjuntos, moletons, jaquetas e acessórios, femininos e masculinos, para treinar com conforto.",
   path: "/produtos",
 });
 
@@ -28,8 +28,8 @@ export default async function ProductsPage() {
           Todos os produtos
         </h1>
         <p className="mt-4 text-[15px] leading-relaxed text-ink-soft">
-          Leggings, tops, shorts, regatas e moletons feitos para treinar com conforto: tecidos leves, toque macio e
-          costuras que não incomodam.
+          Tops, shorts, conjuntos, moletons, jaquetas e acessórios, femininos e masculinos, escolhidos para treinar com
+          conforto e liberdade de movimento.
         </p>
       </header>
       <ProductGrid products={products} />

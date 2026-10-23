@@ -23,7 +23,7 @@ export function TrustStrip() {
           },
         ]
       : []),
-    { Icon: WindIcon, title: "Conforto em primeiro lugar", text: "Tecidos leves, respiráveis e sem atrito" },
+    { Icon: WindIcon, title: "Conforto em primeiro lugar", text: "Peças escolhidas para treinar com liberdade" },
   ];
 
   return (

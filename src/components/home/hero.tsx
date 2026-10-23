@@ -49,8 +49,8 @@ export async function Hero() {
         </div>
 
         <p className="mx-auto mt-8 max-w-xl text-pretty text-[15px] leading-relaxed text-ink-soft sm:text-base">
-          Leggings, tops, shorts e moletons feitos para acompanhar cada repetição: tecido respirável, toque macio e
-          costuras que não incomodam.
+          Tops, shorts, conjuntos, moletons e acessórios escolhidos para acompanhar cada repetição, com modelagens que
+          dão liberdade de movimento.
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <ButtonLink href="/produtos" size="lg">

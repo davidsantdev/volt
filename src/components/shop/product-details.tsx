@@ -29,7 +29,7 @@ export function ProductBenefits() {
         ]
       : []),
     { Icon: RefreshIcon, text: "7 dias para desistir da compra" },
-    { Icon: WindIcon, text: "Tecido leve, respirável e sem atrito" },
+    { Icon: WindIcon, text: "Peça escolhida para treinar com conforto" },
   ];
   return (
     <ul className="mt-8 space-y-3 rounded-card bg-mist p-5">

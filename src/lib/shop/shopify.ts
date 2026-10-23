@@ -137,7 +137,7 @@ const PRODUCT_FULL = /* GraphQL */ `
     updatedAt
     seo { title description }
     images(first: 20) { nodes { ...ImageFields } }
-    collections(first: 5) { nodes { handle title } }
+    collections(first: 12) { nodes { handle title } }
     variants(first: 100) { nodes { ...VariantFields } }
   }
 `;
@@ -300,8 +300,21 @@ function mapProduct(node: GqlProduct): Product {
     updatedAt: node.updatedAt ?? node.createdAt,
     images: images.length ? images : summary.featuredImage ? [summary.featuredImage] : [],
     seo: { title: node.seo?.title ?? null, description: node.seo?.description ?? null },
-    collections: node.collections?.nodes ?? [],
+    collections: orderProductCollections(node.collections?.nodes ?? []),
   };
+}
+
+/**
+ * A primeira coleção do produto vira a "categoria" dele (breadcrumb, selo acima do título, SEO).
+ * Fora as especiais (lançamentos, página inicial...); categorias como "Shorts" vêm antes de Feminino/Masculino,
+ * que são só o público.
+ */
+function orderProductCollections(nodes: { handle: string; title: string }[]) {
+  const hidden = new Set(site.collections.hidden);
+  const audience = new Set(site.collections.priority);
+  return nodes
+    .filter((collection) => !hidden.has(collection.handle))
+    .sort((a, b) => Number(audience.has(a.handle)) - Number(audience.has(b.handle)));
 }
 
 /* -------------------------------------------------------------------------- */

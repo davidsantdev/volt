@@ -38,7 +38,7 @@ export const site = {
   title: "VOLT | Roupas de academia com conforto e performance",
   tagline: "Roupas de academia com conforto de verdade",
   description:
-    "Leggings, tops, shorts, regatas e moletons de academia com tecido respirável e toque macio. Treine com mais conforto, estilo e liberdade de movimento.",
+    "Tops, shorts, conjuntos, moletons, jaquetas e acessórios de academia, femininos e masculinos. Treine com mais conforto, estilo e liberdade de movimento.",
   keywords: [
     "roupas de academia",
     "roupa de treino",
@@ -72,6 +72,8 @@ export const site = {
     new: "lancamentos",
     /** Coleções que não aparecem como "categoria". */
     hidden: ["mais-vendidos", "lancamentos", "frontpage", "all"],
+    /** Aparecem primeiro nas listas de categorias (as demais seguem a ordem da Shopify). */
+    priority: ["feminino", "masculino"],
   },
 
   /**
