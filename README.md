@@ -4,6 +4,10 @@ Loja virtual *headless*: o catálogo, o carrinho, o checkout e os pedidos ficam 
 vitrine em **Next.js 16**, feita para velocidade e SEO. Os produtos vêm de fornecedores de **dropshipping** conectados
 à Shopify (veja [docs/dropshipping.md](docs/dropshipping.md)).
 
+Recursos de venda (copiados de lojas que vendem, com fontes em [docs/referencias.md](docs/referencias.md)): frete por
+CEP e cupom no carrinho, guia de tamanhos, filtros, busca instantânea, amostras de cor, barra fixa de compra no
+celular, zoom de foto, vistos recentemente, newsletter real e WhatsApp.
+
 Documentação do catálogo: [como foi montado e como chegar a 100+ produtos](docs/catalogo.md) ·
 [planilha de custo x preço](docs/catalogo-produtos.csv) ·
 [pedido de produtos ao gerente da SIHI](docs/pedido-produtos-sihi.md).
