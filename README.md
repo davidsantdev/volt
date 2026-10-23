@@ -60,6 +60,27 @@ trocar ou somar fornecedores não exige mexer neste código.
 8. **Pagamentos no Brasil:** a Shopify Payments não existe no Brasil; configure um gateway com Pix e cartão
    (Mercado Pago, Pagar.me, PagBank, Appmax…). Detalhes no guia de dropshipping.
 
+## Antes de vender
+
+O site só anuncia o que está ligado em [src/config/site.ts](src/config/site.ts), porque oferta anunciada obriga a
+loja a cumprir (CDC, art. 30). Ligue cada item **depois** de configurá-lo:
+
+| O que | Onde configurar | Depois, em `site.ts` |
+| --- | --- | --- |
+| Pagamento com Pix e cartão | Shopify → Configurações → Pagamentos: um gateway brasileiro (Mercado Pago, Pagar.me, PagBank, Appmax…). Sem isso o checkout não recebe. | — |
+| Desconto no Pix | No gateway (ex.: "desconto para Pix") | `pixDiscount: 0.05` |
+| Parcelamento sem juros | No gateway | `maxInstallments: 3` |
+| Frete grátis | Configurações → Frete e entrega → taxa "Frete grátis" com pedido mínimo. Hoje a loja cobra **R$ 22 (Padrão)** para SP, inclusive em pedidos acima de R$ 299. | `freeShippingThreshold: 299` |
+| Cupom de boas-vindas | Descontos → criar código (ex.: BEMVINDO10) | `newsletter: { discountLabel: "10% off", discountCode: "BEMVINDO10" }` |
+| Dados da empresa | Obrigatórios para quem vende online (Decreto 7.962/2013) | `legalName`, `cnpj` |
+| Atendimento | — | `contact.email`, `contact.whatsapp` (liga os botões de WhatsApp), `social` |
+| Políticas | Configurações → Políticas (troca, privacidade, termos, frete), em português | Páginas `entregas`, `trocas-e-devolucoes`, `privacidade`, `termos` em Shopify → Páginas |
+| Domínio | Seu domínio na hospedagem | `NEXT_PUBLIC_SITE_URL` no `.env` |
+
+Já funcionam sem configuração extra: **frete por CEP no carrinho** (taxas reais da Shopify), **cupons** criados em
+Descontos, **newsletter** (cadastra o cliente com consentimento de marketing na Shopify) e o checkout da Shopify.
+Faça um pedido de teste com o gateway em modo de teste antes de divulgar a loja.
+
 ### Testando a conexão
 
 Com o domínio e o token preenchidos no `.env.local` (esse arquivo é só do seu computador; nunca cole o token em chats

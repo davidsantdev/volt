@@ -1,8 +1,8 @@
-import { site } from "@/config/site";
 import { BoltIcon } from "@/components/ui/icons";
+import { announcementMessages } from "@/lib/promos";
 
 export function AnnouncementBar() {
-  const messages = site.announcement;
+  const messages = announcementMessages();
   if (messages.length === 0) return null;
   return (
     <div className="bg-ink text-white">

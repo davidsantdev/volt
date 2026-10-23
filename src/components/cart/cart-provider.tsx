@@ -14,6 +14,7 @@ import {
   getCartAction,
   removeCartLineAction,
   updateCartLineAction,
+  updateDiscountAction,
   type CartResult,
 } from "@/app/actions/cart";
 import type { ArtSpec, Cart, CartLine, Money, SelectedOption, ShopImage } from "@/lib/shop/types";
@@ -44,6 +45,8 @@ type CartContextValue = {
   addItem: (input: AddItemInput) => Promise<boolean>;
   setQuantity: (lineId: string, quantity: number) => Promise<void>;
   removeLine: (lineId: string) => Promise<void>;
+  /** Aplica um cupom (texto vazio remove). Devolve se a Shopify aceitou para os itens do carrinho. */
+  applyDiscount: (code: string) => Promise<boolean>;
 };
 
 /**
@@ -62,6 +65,7 @@ const outsideProvider: CartContextValue = {
   addItem: async () => false,
   setQuantity: async () => {},
   removeLine: async () => {},
+  applyDiscount: async () => false,
 };
 
 const CartContext = createContext<CartContextValue>(outsideProvider);
@@ -220,6 +224,25 @@ export function CartProvider({ shopify, children }: { shopify: boolean; children
     [shopify, run, setQuantity],
   );
 
+  const applyDiscount = useCallback(
+    async (code: string) => {
+      if (!shopify) {
+        setError("Cupons funcionam com a loja conectada à Shopify.");
+        return false;
+      }
+      let accepted = false;
+      await run(async () => {
+        const result = await updateDiscountAction(code);
+        if (result.ok && code.trim()) {
+          accepted = Boolean(result.cart?.discountCodes?.some((item) => item.applicable && item.code.toLowerCase() === code.trim().toLowerCase()));
+        }
+        return result;
+      });
+      return accepted;
+    },
+    [shopify, run],
+  );
+
   const value = useMemo<CartContextValue>(
     () => ({
       cart,
@@ -232,8 +255,9 @@ export function CartProvider({ shopify, children }: { shopify: boolean; children
       addItem,
       setQuantity,
       removeLine,
+      applyDiscount,
     }),
-    [cart, isOpen, isPending, error, shopify, addItem, setQuantity, removeLine],
+    [cart, isOpen, isPending, error, shopify, addItem, setQuantity, removeLine, applyDiscount],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

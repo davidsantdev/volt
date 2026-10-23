@@ -2,17 +2,21 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { PlusIcon, WhatsAppIcon } from "@/components/ui/icons";
 import { buttonClasses } from "@/components/ui/button";
 import { site } from "@/config/site";
+import { installmentsLabel, whatsappHref } from "@/lib/promos";
+
+const whatsapp = whatsappHref("Olá! Tenho uma dúvida sobre um produto da loja.");
 
 const faqs = [
   {
     question: "Como escolho o tamanho certo?",
-    answer:
-      "Confira as medidas na descrição de cada produto. Se ficar em dúvida entre dois tamanhos, fale com a gente pelo WhatsApp que ajudamos você a escolher.",
+    answer: `Veja o guia de tamanhos na página de cada produto: a numeração segue o padrão asiático e costuma vestir menor, então, em dúvida entre dois tamanhos, escolha o maior.${
+      whatsapp ? " Se preferir, fale com a gente pelo WhatsApp que ajudamos você a escolher." : ""
+    }`,
   },
   {
     question: "Qual é o prazo de entrega?",
     answer:
-      "O prazo estimado e o valor do frete aparecem no checkout, antes de você pagar. Quando o pedido é enviado, você recebe o código de rastreio por e-mail.",
+      "Você pode calcular o frete pelo CEP no carrinho; o valor e o prazo finais aparecem no checkout, antes de você pagar. Quando o pedido é enviado, você recebe o código de rastreio por e-mail.",
   },
   {
     question: "Posso trocar ou devolver?",
@@ -21,9 +25,9 @@ const faqs = [
   },
   {
     question: "Quais são as formas de pagamento?",
-    answer: `As opções disponíveis aparecem no checkout, com Pix e cartão de crédito.${
+    answer: `As formas de pagamento disponíveis aparecem no checkout seguro da Shopify, antes de você confirmar o pedido.${
       site.pixDiscount ? ` Pagando no Pix você tem ${Math.round(site.pixDiscount * 100)}% de desconto.` : ""
-    }`,
+    }${installmentsLabel() ? ` No cartão: ${installmentsLabel()?.toLowerCase()}.` : ""}`,
   },
   {
     question: "Como cuidar das minhas roupas de academia?",
@@ -51,17 +55,21 @@ export function Faq() {
           <h2 id="faq-title" className="mt-3 text-3xl font-extrabold uppercase leading-[1.02] tracking-[-0.035em] sm:text-5xl">
             Tudo que você precisa saber
           </h2>
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-soft">
-            Não achou o que procurava? Nossa equipe responde rapidinho.
-          </p>
-          <a
-            href={`https://wa.me/${site.contact.whatsapp}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonClasses({ variant: "outline", className: "mt-6" })}
-          >
-            <WhatsAppIcon className="size-4" /> Falar no WhatsApp
-          </a>
+          {whatsapp && (
+            <>
+              <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-soft">
+                Não achou o que procurava? Nossa equipe responde rapidinho.
+              </p>
+              <a
+                href={whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonClasses({ variant: "outline", className: "mt-6" })}
+              >
+                <WhatsAppIcon className="size-4" /> Falar no WhatsApp
+              </a>
+            </>
+          )}
         </div>
 
         <div className="divide-y divide-line border-y border-line">

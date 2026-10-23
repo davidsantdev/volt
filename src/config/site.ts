@@ -1,6 +1,7 @@
 /**
- * Tudo que é "marca" e "promessa da loja" fica aqui. Troque os valores abaixo
- * antes de publicar — em especial frete grátis, desconto no Pix, CNPJ e redes.
+ * Tudo que é "marca" e "promessa da loja" fica aqui. Campo vazio (ou 0) = o site não mostra.
+ * Oferta anunciada obriga a loja a cumprir (CDC, art. 30): só ative o que já está configurado
+ * na Shopify ou no gateway de pagamento. Lista completa em README.md → "Antes de vender".
  */
 
 const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
@@ -25,8 +26,9 @@ if (
 
 export const site = {
   name: "VOLT",
-  legalName: "VOLT Fitwear Ltda.",
-  cnpj: "00.000.000/0001-00",
+  /** Razão social e CNPJ (ou CPF de MEI): quem vende online deve exibir no site (Decreto 7.962/2013). */
+  legalName: "",
+  cnpj: "",
   url: siteUrl,
   lang: "pt-BR",
   locale: "pt_BR",
@@ -49,21 +51,32 @@ export const site = {
     "regata dry fit",
   ],
 
-  /** Promessas exibidas no site. Só deixe o que a operação realmente cumpre. */
-  freeShippingThreshold: 299,
-  pixDiscount: 0.05,
-  announcement: ["Frete grátis acima de R$ 299", "5% off no Pix"],
-  newsletter: { discountLabel: "10% off", discountCode: "BEMVINDO10" },
+  /**
+   * Frete grátis a partir deste valor (R$). Antes, crie em Shopify → Configurações → Frete e entrega uma taxa
+   * "Frete grátis" com pedido mínimo igual. Em 23/10/2026 a loja cobrava R$ 22 ("Padrão") para SP mesmo
+   * num pedido de R$ 319, então fica desligado. 0 = desligado.
+   */
+  freeShippingThreshold: 0,
+  /** Desconto no Pix (0.05 = 5%). Só depois que o gateway (Mercado Pago, Pagar.me…) aplicar o desconto. 0 = desligado. */
+  pixDiscount: 0,
+  /** Parcelas sem juros que o gateway oferece (ex.: 3). 0 ou 1 = não mostra parcelamento. */
+  maxInstallments: 0,
+  /** Mensagens da barra do topo além das de frete grátis, Pix e parcelamento (que entram sozinhas quando ativas). */
+  announcement: ["Devolução em até 7 dias", "Pagamento seguro pela Shopify"],
+  /** Cupom de boas-vindas: crie o código em Shopify → Descontos antes de preencher (ex.: "10% off" / "BEMVINDO10"). */
+  newsletter: { discountLabel: "", discountCode: "" },
 
   contact: {
-    email: "contato@exemplo.com.br",
-    whatsapp: "5511999999999",
+    email: "",
+    /** Só números, com DDI e DDD (ex.: 5511912345678). Vazio = sem botões de WhatsApp. */
+    whatsapp: "",
     hours: "Seg a Sex, 9h às 18h",
   },
+  /** Endereço completo do perfil (ex.: https://instagram.com/sualoja). */
   social: {
-    instagram: "https://instagram.com/",
-    tiktok: "https://tiktok.com/",
-    youtube: "https://youtube.com/",
+    instagram: "",
+    tiktok: "",
+    youtube: "",
   },
 
   /** Handles das coleções especiais (crie com esses nomes na Shopify). */

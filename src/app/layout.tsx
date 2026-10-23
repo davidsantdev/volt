@@ -78,18 +78,22 @@ const organization = {
       "@type": "Organization",
       "@id": `${site.url}/#organization`,
       name: site.name,
-      legalName: site.legalName,
+      ...(site.legalName ? { legalName: site.legalName } : {}),
       url: site.url,
       logo: `${site.url}/icon-512.png`,
       ...(profiles.length > 0 ? { sameAs: profiles } : {}),
-      contactPoint: [
-        {
-          "@type": "ContactPoint",
-          contactType: "customer service",
-          email: site.contact.email,
-          availableLanguage: "pt-BR",
-        },
-      ],
+      ...(site.contact.email
+        ? {
+            contactPoint: [
+              {
+                "@type": "ContactPoint",
+                contactType: "customer service",
+                email: site.contact.email,
+                availableLanguage: "pt-BR",
+              },
+            ],
+          }
+        : {}),
     },
     {
       "@type": "WebSite",

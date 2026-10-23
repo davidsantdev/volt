@@ -1,21 +1,28 @@
 "use server";
 
+import { headers } from "next/headers";
 import { site } from "@/config/site";
+import { isShopifyConfigured } from "@/lib/shop/config";
+import { subscribeToNewsletter } from "@/lib/shop/shopify";
 
 export type NewsletterState = { status: "idle" | "success" | "error"; message: string };
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const FAILED: NewsletterState = { status: "error", message: "Não conseguimos concluir agora. Tente novamente em instantes." };
 
 function success(): NewsletterState {
   return {
     status: "success",
-    message: `Pronto! Use o cupom ${site.newsletter.discountCode} na sua primeira compra.`,
+    // Só cita cupom se ele foi configurado (e criado em Shopify → Descontos).
+    message: site.newsletter.discountCode
+      ? `Pronto! Use o cupom ${site.newsletter.discountCode} na sua primeira compra.`
+      : "Pronto! Você vai receber nossos lançamentos e ofertas por e-mail.",
   };
 }
 
 /**
- * Cadastra o e-mail como cliente com consentimento de marketing na Shopify
- * (Admin API). Sem SHOPIFY_ADMIN_ACCESS_TOKEN, apenas simula o sucesso.
+ * Cadastra o e-mail como cliente com consentimento de marketing na Shopify: pela Admin API se houver
+ * SHOPIFY_ADMIN_ACCESS_TOKEN; senão pela Storefront API (mesmo token do site). Sem Shopify, só simula.
  */
 export async function subscribeAction(
   _previous: NewsletterState,
@@ -34,8 +41,18 @@ export async function subscribeAction(
   const token = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
   const domain = process.env.SHOPIFY_STORE_DOMAIN?.replace(/^https?:\/\//, "").replace(/\/+$/, "");
   if (!token || !domain) {
-    console.info("[newsletter] modo demonstração: inscrição recebida (não enviada à Shopify).");
-    return success();
+    if (!isShopifyConfigured()) {
+      console.info("[newsletter] modo demonstração: inscrição recebida (não enviada à Shopify).");
+      return success();
+    }
+    try {
+      const requestHeaders = await headers();
+      const ip = requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() || requestHeaders.get("x-real-ip") || undefined;
+      return (await subscribeToNewsletter(email, ip)) ? success() : FAILED;
+    } catch (error) {
+      console.error("[newsletter]", error);
+      return FAILED;
+    }
   }
 
   try {

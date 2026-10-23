@@ -4,12 +4,14 @@ import { cookies, headers } from "next/headers";
 import { isShopifyConfigured } from "@/lib/shop/config";
 import {
   cartCreate,
+  cartDiscountCodesUpdate,
   cartGet,
   cartLinesAdd,
   cartLinesRemove,
   cartLinesUpdate,
+  cartShippingQuote,
 } from "@/lib/shop/shopify";
-import type { Cart } from "@/lib/shop/types";
+import type { Cart, ShippingQuote } from "@/lib/shop/types";
 
 const COOKIE = "cart_id";
 /** A Shopify descarta carrinhos sem uso depois de ~10 dias. */
@@ -111,4 +113,60 @@ export async function updateCartLineAction(lineId: string, quantity: number): Pr
 
 export async function removeCartLineAction(lineId: string): Promise<CartResult> {
   return updateCartLineAction(lineId, 0);
+}
+
+/** Aplica um cupom (texto vazio remove). A Shopify diz se ele vale para estes itens em `discountCodes`. */
+export async function updateDiscountAction(code: string): Promise<CartResult> {
+  if (!isShopifyConfigured()) return { ok: false, error: "Cupons funcionam com a loja conectada à Shopify." };
+  const id = await readCartId();
+  if (!id) return { ok: false, error: "Seu carrinho está vazio." };
+  const clean = String(code ?? "").trim().slice(0, 50);
+  try {
+    return { ok: true, cart: await cartDiscountCodesUpdate(id, clean ? [clean] : [], await buyerIp()) };
+  } catch (error) {
+    return fail(error, "Não foi possível aplicar o cupom agora.");
+  }
+}
+
+export type ShippingResult =
+  | { ok: true; place: string | null; options: ShippingQuote[] }
+  | { ok: false; error: string };
+
+/** Cidade e UF do CEP (ViaCEP, serviço público). null se o serviço não responder; "invalid" se o CEP não existe. */
+async function lookupCep(cep: string): Promise<{ city: string; uf: string } | null | "invalid"> {
+  try {
+    const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`, { signal: AbortSignal.timeout(4000) });
+    if (!response.ok) return null;
+    const data = (await response.json()) as { erro?: boolean | string; localidade?: string; uf?: string };
+    if (data.erro) return "invalid";
+    return data.localidade && data.uf ? { city: data.localidade, uf: data.uf } : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Calcula o frete do carrinho atual para um CEP (taxas reais da Shopify). */
+export async function estimateShippingAction(cepInput: string): Promise<ShippingResult> {
+  if (!isShopifyConfigured()) return { ok: false, error: "O frete é calculado com a loja conectada à Shopify." };
+  const cep = String(cepInput ?? "").replace(/\D/g, "");
+  if (cep.length !== 8) return { ok: false, error: "Digite um CEP com 8 números." };
+  const id = await readCartId();
+  if (!id) return { ok: false, error: "Adicione um produto para calcular o frete." };
+
+  const place = await lookupCep(cep);
+  if (place === "invalid") return { ok: false, error: "CEP não encontrado. Confira os números." };
+  try {
+    const options = await cartShippingQuote(
+      id,
+      { zip: `${cep.slice(0, 5)}-${cep.slice(5)}`, city: place?.city, provinceCode: place?.uf },
+      await buyerIp(),
+    );
+    if (options.length === 0) {
+      return { ok: false, error: "Ainda não há opção de entrega para este CEP." };
+    }
+    return { ok: true, place: place ? `${place.city}/${place.uf}` : null, options };
+  } catch (error) {
+    console.error("[frete]", error);
+    return { ok: false, error: "Não foi possível calcular o frete agora. Ele aparece no checkout." };
+  }
 }

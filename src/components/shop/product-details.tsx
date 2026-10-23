@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { PlusIcon, RefreshIcon, TruckIcon, WindIcon } from "@/components/ui/icons";
 import { site } from "@/config/site";
+import { formatAmount } from "@/lib/promos";
 import type { Product } from "@/lib/shop/types";
-import { formatMoney, moneyFrom } from "@/lib/utils";
 
 export function ProductHeader({ product }: { product: Product }) {
   // Não usa o "tipo de produto": fornecedores de dropshipping mandam categorias em inglês
@@ -20,14 +20,9 @@ export function ProductHeader({ product }: { product: Product }) {
 
 export function ProductBenefits() {
   const items = [
-    ...(site.freeShippingThreshold
-      ? [
-          {
-            Icon: TruckIcon,
-            text: `Frete grátis em compras acima de ${formatMoney(moneyFrom(site.freeShippingThreshold, site.currency)).replace(",00", "")}`,
-          },
-        ]
-      : []),
+    site.freeShippingThreshold
+      ? { Icon: TruckIcon, text: `Frete grátis em compras acima de ${formatAmount(site.freeShippingThreshold)}` }
+      : { Icon: TruckIcon, text: "Calcule o frete pelo CEP no carrinho" },
     { Icon: RefreshIcon, text: "7 dias para desistir da compra" },
     { Icon: WindIcon, text: "Peça escolhida para treinar com conforto" },
   ];
@@ -70,7 +65,10 @@ export function ProductDetails({ product }: { product: Product }) {
       </Disclosure>
       <Disclosure title="Entrega e trocas">
         <div className="rich-text">
-          <p>O prazo estimado e o valor do frete aparecem no checkout, antes de você pagar.</p>
+          <p>
+            Calcule o frete pelo CEP no carrinho. O valor e o prazo finais aparecem no checkout, antes de você pagar, e o
+            código de rastreio chega por e-mail quando o pedido é enviado.
+          </p>
           <p>
             Você pode desistir da compra em até 7 dias após o recebimento, conforme o Código de Defesa do Consumidor.
             Para trocas, fale com a nossa equipe.

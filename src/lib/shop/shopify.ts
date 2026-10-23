@@ -12,6 +12,7 @@ import type {
   Product,
   ProductSort,
   ProductSummary,
+  ShippingQuote,
   ShopImage,
   Variant,
 } from "./types";
@@ -152,6 +153,7 @@ const CART_FRAGMENT = /* GraphQL */ `
     id
     checkoutUrl
     totalQuantity
+    discountCodes { code applicable }
     cost {
       subtotalAmount { ...MoneyFields }
       totalAmount { ...MoneyFields }
@@ -625,6 +627,7 @@ type GqlCart = {
   id: string;
   checkoutUrl: string;
   totalQuantity: number;
+  discountCodes?: { code: string; applicable: boolean }[];
   cost: { subtotalAmount: GqlMoney; totalAmount: GqlMoney };
   lines: {
     nodes: {
@@ -672,6 +675,7 @@ function mapCart(cart: GqlCart): Cart {
     totalQuantity: cart.totalQuantity,
     subtotal: cart.cost.subtotalAmount,
     total: cart.cost.totalAmount,
+    discountCodes: cart.discountCodes ?? [],
     lines,
   };
 }
@@ -766,6 +770,117 @@ export async function cartLinesUpdate(
     { buyerIp },
   );
   return unwrapCart(data, "cartLinesUpdate");
+}
+
+/** Aplica (ou remove, com lista vazia) cupons criados em Shopify → Descontos. */
+export async function cartDiscountCodesUpdate(cartId: string, codes: string[], buyerIp?: string) {
+  const data = await shopifyFetch<CartMutation<"cartDiscountCodesUpdate">>(
+    /* GraphQL */ `
+      ${CART_FRAGMENT}
+      mutation CartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]!) {
+        cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+          cart { ...CartFields }
+          userErrors { message }
+        }
+      }
+    `,
+    { cartId, discountCodes: codes },
+    { buyerIp },
+  );
+  return unwrapCart(data, "cartDiscountCodesUpdate");
+}
+
+/**
+ * Cota o frete do carrinho para um CEP, com as taxas configuradas em Shopify → Frete e entrega.
+ * O endereço fica no carrinho (sem salvar na conta), então o checkout já abre com o CEP preenchido.
+ */
+export async function cartShippingQuote(
+  cartId: string,
+  address: { zip: string; city?: string; provinceCode?: string },
+  buyerIp?: string,
+): Promise<ShippingQuote[]> {
+  const config = getShopifyConfig();
+  type Result = {
+    cartDeliveryAddressesReplace: {
+      cart: {
+        deliveryGroups: {
+          nodes: { deliveryOptions: { title: string | null; description: string | null; estimatedCost: GqlMoney }[] }[];
+        };
+      } | null;
+      userErrors: { message: string }[];
+    };
+  };
+  const data = await shopifyFetch<Result>(
+    /* GraphQL */ `
+      ${MONEY}
+      mutation CartShippingQuote($cartId: ID!, $addresses: [CartSelectableAddressInput!]!) {
+        cartDeliveryAddressesReplace(cartId: $cartId, addresses: $addresses) {
+          cart {
+            deliveryGroups(first: 5) {
+              nodes { deliveryOptions { title description estimatedCost { ...MoneyFields } } }
+            }
+          }
+          userErrors { message }
+        }
+      }
+    `,
+    {
+      cartId,
+      addresses: [
+        {
+          address: {
+            deliveryAddress: {
+              countryCode: config?.country ?? "BR",
+              zip: address.zip,
+              city: address.city,
+              provinceCode: address.provinceCode,
+            },
+          },
+          selected: true,
+          oneTimeUse: true,
+        },
+      ],
+    },
+    { buyerIp },
+  );
+  const result = data.cartDeliveryAddressesReplace;
+  if (result.userErrors.length) {
+    throw new ShopifyError(result.userErrors.map((error) => error.message).join("; "));
+  }
+  // Um grupo por origem de envio; as opções iguais (mesmo título) aparecem uma vez só, com o maior valor.
+  const byTitle = new Map<string, ShippingQuote>();
+  for (const group of result.cart?.deliveryGroups.nodes ?? []) {
+    for (const option of group.deliveryOptions) {
+      const title = option.title?.trim() || "Entrega";
+      const previous = byTitle.get(title);
+      if (!previous || Number(option.estimatedCost.amount) > Number(previous.cost.amount)) {
+        byTitle.set(title, { title, description: option.description, cost: option.estimatedCost });
+      }
+    }
+  }
+  return [...byTitle.values()].sort((a, b) => Number(a.cost.amount) - Number(b.cost.amount));
+}
+
+/**
+ * Newsletter sem token de Admin: cria o cliente (contas clássicas) com consentimento de e-mail marketing.
+ * A senha é aleatória e nunca é usada; quem quiser uma conta depois usa "esqueci a senha".
+ * Devolve true também quando o e-mail já é cliente (não revela quem compra na loja).
+ */
+export async function subscribeToNewsletter(email: string, buyerIp?: string) {
+  const data = await shopifyFetch<{
+    customerCreate: { customerUserErrors: { code: string | null; message: string }[] } | null;
+  }>(
+    /* GraphQL */ `
+      mutation Newsletter($input: CustomerCreateInput!) {
+        customerCreate(input: $input) { customerUserErrors { code message } }
+      }
+    `,
+    { input: { email, password: `${crypto.randomUUID()}-Aa1`, acceptsMarketing: true } },
+    { buyerIp },
+  );
+  const errors = data.customerCreate?.customerUserErrors ?? [];
+  if (errors.length) console.warn("[newsletter]", errors.map((error) => error.code ?? error.message).join(", "));
+  return errors.every((error) => error.code === "TAKEN" || /taken|already|cadastrad|em uso/i.test(error.message));
 }
 
 export async function cartLinesRemove(cartId: string, lineId: string, buyerIp?: string) {

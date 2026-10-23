@@ -1,6 +1,6 @@
 import { RefreshIcon, TagIcon, TruckIcon, WindIcon } from "@/components/ui/icons";
 import { site } from "@/config/site";
-import { formatMoney, moneyFrom } from "@/lib/utils";
+import { formatAmount } from "@/lib/promos";
 
 export function TrustStrip() {
   const items = [
@@ -9,10 +9,10 @@ export function TrustStrip() {
           {
             Icon: TruckIcon,
             title: "Frete grátis",
-            text: `Em compras acima de ${formatMoney(moneyFrom(site.freeShippingThreshold, site.currency)).replace(",00", "")}`,
+            text: `Em compras acima de ${formatAmount(site.freeShippingThreshold)}`,
           },
         ]
-      : []),
+      : [{ Icon: TruckIcon, title: "Frete pelo CEP", text: "Calcule no carrinho, antes de pagar" }]),
     { Icon: RefreshIcon, title: "Compra tranquila", text: "7 dias para desistir, como manda a lei" },
     ...(site.pixDiscount
       ? [
@@ -22,7 +22,7 @@ export function TrustStrip() {
             text: "Desconto aplicado no pagamento",
           },
         ]
-      : []),
+      : [{ Icon: TagIcon, title: "Pagamento seguro", text: "Checkout oficial da Shopify" }]),
     { Icon: WindIcon, title: "Conforto em primeiro lugar", text: "Peças escolhidas para treinar com liberdade" },
   ];
 

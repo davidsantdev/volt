@@ -4,6 +4,7 @@ import { Logo } from "@/components/layout/logo";
 import { NewsletterForm } from "@/components/layout/newsletter-form";
 import { InstagramIcon, TikTokIcon, WhatsAppIcon, YoutubeIcon } from "@/components/ui/icons";
 import { site } from "@/config/site";
+import { hasContactChannel, whatsappHref } from "@/lib/promos";
 import { getCollections, getSpecialLinks } from "@/lib/shop";
 
 async function CopyrightYear() {
@@ -21,6 +22,8 @@ export async function Footer() {
     .filter((collection) => !site.collections.hidden.includes(collection.handle))
     .slice(0, 8);
 
+  const contactChannel = hasContactChannel();
+  const whatsapp = whatsappHref();
   const social = [
     { href: site.social.instagram, label: "Instagram", Icon: InstagramIcon },
     { href: site.social.tiktok, label: "TikTok", Icon: TikTokIcon },
@@ -38,8 +41,14 @@ export async function Footer() {
                 Entre para o time
               </h2>
               <p className="mt-2 max-w-sm text-sm text-ink/80">
-                Ganhe <strong className="font-extrabold">{site.newsletter.discountLabel}</strong> na primeira compra e
-                receba lançamentos antes de todo mundo.
+                {site.newsletter.discountLabel ? (
+                  <>
+                    Ganhe <strong className="font-extrabold">{site.newsletter.discountLabel}</strong> na primeira compra
+                    e receba lançamentos antes de todo mundo.
+                  </>
+                ) : (
+                  "Receba lançamentos, reposições e ofertas antes de todo mundo."
+                )}
               </p>
             </div>
             <NewsletterForm />
@@ -91,26 +100,33 @@ export async function Footer() {
               </ul>
             </nav>
 
+            {(contactChannel || social.length > 0) && (
             <div>
               <h3 className={columnTitle}>Fale com a gente</h3>
-              <ul className="space-y-2.5 text-[13px] text-ink/80">
-                <li>
-                  <a href={`mailto:${site.contact.email}`} className={linkClass}>
-                    {site.contact.email}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={`https://wa.me/${site.contact.whatsapp}`}
-                    className={`${linkClass} inline-flex items-center gap-2`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <WhatsAppIcon className="size-4" /> WhatsApp
-                  </a>
-                </li>
-                <li>{site.contact.hours}</li>
-              </ul>
+              {contactChannel && (
+                <ul className="space-y-2.5 text-[13px] text-ink/80">
+                  {site.contact.email && (
+                    <li>
+                      <a href={`mailto:${site.contact.email}`} className={linkClass}>
+                        {site.contact.email}
+                      </a>
+                    </li>
+                  )}
+                  {whatsapp && (
+                    <li>
+                      <a
+                        href={whatsapp}
+                        className={`${linkClass} inline-flex items-center gap-2`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <WhatsAppIcon className="size-4" /> WhatsApp
+                      </a>
+                    </li>
+                  )}
+                  {site.contact.hours && <li>{site.contact.hours}</li>}
+                </ul>
+              )}
               {social.length > 0 && (
                 <ul className="mt-5 flex gap-2" aria-label="Redes sociais">
                   {social.map(({ href, label, Icon }) => (
@@ -129,12 +145,14 @@ export async function Footer() {
                 </ul>
               )}
             </div>
+            )}
           </div>
         </div>
 
         <div className="bg-ink px-6 py-5 text-[11px] leading-relaxed text-white/75 sm:px-12">
           <p>
-            © <CopyrightYear /> {site.legalName} · CNPJ {site.cnpj} · Todos os direitos reservados.
+            © <CopyrightYear /> {site.legalName || site.name}
+            {site.cnpj && ` · CNPJ ${site.cnpj}`} · Todos os direitos reservados.
           </p>
         </div>
       </div>

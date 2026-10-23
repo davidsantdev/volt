@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useId, useState, useTransition, type FormEvent } from "react";
+import { estimateShippingAction, type ShippingResult } from "@/app/actions/cart";
 import { ProductImage } from "@/components/art/product-image";
 import { useCart } from "@/components/cart/cart-provider";
 import { Button, ButtonLink, buttonClasses } from "@/components/ui/button";
@@ -113,10 +115,156 @@ function Line({ line }: { line: CartLine }) {
   );
 }
 
+const fieldClass =
+  "h-11 min-w-0 flex-1 rounded-full border border-line bg-white px-4 text-sm outline-none transition-colors placeholder:text-muted focus:border-ink";
+const smallButton =
+  "h-11 shrink-0 rounded-full bg-ink px-5 text-[11px] font-extrabold uppercase tracking-[0.12em] text-white transition-opacity disabled:opacity-50";
+
+/** Cupom criado em Shopify → Descontos. Um por vez; se o novo não valer, o anterior volta. */
+function CouponForm() {
+  const { cart, applyDiscount, isPending } = useCart();
+  const id = useId();
+  const [code, setCode] = useState("");
+  const [feedback, setFeedback] = useState<{ ok: boolean; text: string } | null>(null);
+  const active = cart?.discountCodes?.find((item) => item.applicable);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const value = code.trim();
+    if (!value) return;
+    const accepted = await applyDiscount(value);
+    if (accepted) {
+      setFeedback({ ok: true, text: `Cupom ${value.toUpperCase()} aplicado.` });
+      setCode("");
+    } else {
+      setFeedback({ ok: false, text: "Cupom inválido ou não vale para estes itens." });
+      await applyDiscount(active?.code ?? "");
+    }
+  }
+
+  if (active) {
+    return (
+      <div className="flex items-center justify-between gap-3 rounded-2xl bg-lime/60 px-4 py-3 text-xs font-bold">
+        <span>
+          Cupom <span className="uppercase">{active.code}</span> aplicado
+        </span>
+        <button
+          type="button"
+          disabled={isPending}
+          onClick={() => {
+            setFeedback(null);
+            void applyDiscount("");
+          }}
+          className="underline underline-offset-4"
+        >
+          Remover
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-1.5">
+      <label htmlFor={`${id}-coupon`} className="text-[11px] font-bold uppercase tracking-[0.14em]">
+        Cupom de desconto
+      </label>
+      <div className="flex gap-2">
+        <input
+          id={`${id}-coupon`}
+          value={code}
+          onChange={(event) => setCode(event.target.value)}
+          placeholder="Digite o código"
+          autoComplete="off"
+          autoCapitalize="characters"
+          maxLength={50}
+          className={fieldClass}
+        />
+        <button type="submit" disabled={isPending || !code.trim()} className={smallButton}>
+          Aplicar
+        </button>
+      </div>
+      {feedback && (
+        <p role="status" className={`text-xs font-semibold ${feedback.ok ? "text-green-700" : "text-red-700"}`}>
+          {feedback.text}
+        </p>
+      )}
+    </form>
+  );
+}
+
+const formatCep = (value: string) => {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  return digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
+};
+
+/** Cotação real das taxas de Shopify → Frete e entrega para o CEP (o checkout já abre com ele). */
+function ShippingEstimate() {
+  const { cart } = useCart();
+  const id = useId();
+  const [cep, setCep] = useState("");
+  const [quote, setQuote] = useState<{ signature: string; result: ShippingResult } | null>(null);
+  const [pending, startTransition] = useTransition();
+  // A cotação vale para os itens de agora: mudou o carrinho, ela some.
+  const signature = `${cart?.totalQuantity ?? 0}:${cart?.subtotal.amount ?? 0}`;
+  const result = quote?.signature === signature ? quote.result : null;
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    startTransition(async () => {
+      setQuote({ signature, result: await estimateShippingAction(cep) });
+    });
+  }
+
+  return (
+    <form onSubmit={submit} className="space-y-1.5">
+      <label htmlFor={`${id}-cep`} className="text-[11px] font-bold uppercase tracking-[0.14em]">
+        Calcular frete
+      </label>
+      <div className="flex gap-2">
+        <input
+          id={`${id}-cep`}
+          value={cep}
+          onChange={(event) => setCep(formatCep(event.target.value))}
+          placeholder="00000-000"
+          inputMode="numeric"
+          autoComplete="postal-code"
+          className={fieldClass}
+        />
+        <button type="submit" disabled={pending || cep.replace(/\D/g, "").length !== 8} className={smallButton}>
+          {pending ? "…" : "Calcular"}
+        </button>
+      </div>
+      {result &&
+        (result.ok ? (
+          <ul role="status" className="space-y-1 pt-1 text-xs">
+            {result.place && <li className="text-muted">Entrega para {result.place}</li>}
+            {result.options.map((option) => (
+              <li key={option.title} className="flex justify-between gap-3 font-semibold">
+                <span>
+                  {option.title}
+                  {option.description && <span className="font-normal text-muted"> · {option.description}</span>}
+                </span>
+                <span className="shrink-0 tabular-nums">
+                  {Number(option.cost.amount) === 0 ? "Grátis" : formatMoney(option.cost)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p role="status" className="text-xs font-semibold text-red-700">
+            {result.error}
+          </p>
+        ))}
+    </form>
+  );
+}
+
 export function CartDrawer() {
   const { cart, isOpen, close, error, isPending, isDemo } = useCart();
   const lines = cart?.lines ?? [];
   const subtotal = cart ? Number(cart.subtotal.amount) : 0;
+  const discount = cart ? subtotal - Number(cart.total.amount) : 0;
+  const activeCoupon = cart?.discountCodes?.find((item) => item.applicable);
 
   return (
     <Drawer open={isOpen} onClose={close} label="Carrinho de compras">
@@ -163,13 +311,42 @@ export function CartDrawer() {
                   {error}
                 </p>
               )}
+              {!isDemo && (
+                <div className="mb-4 space-y-3 border-b border-line pb-4">
+                  <ShippingEstimate />
+                  {activeCoupon ? (
+                    <CouponForm />
+                  ) : (
+                    <details className="group">
+                      <summary className="cursor-pointer text-xs font-bold underline-offset-4 hover:underline">
+                        Tem um cupom de desconto?
+                      </summary>
+                      <div className="pt-2">
+                        <CouponForm />
+                      </div>
+                    </details>
+                  )}
+                </div>
+              )}
               <div className="flex items-baseline justify-between">
                 <span className="text-xs font-bold uppercase tracking-[0.14em]">Subtotal</span>
                 <span className="text-xl font-extrabold tabular-nums">
                   {cart ? formatMoney(cart.subtotal) : ""}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-muted">Frete e descontos são calculados no checkout.</p>
+              {cart && discount > 0.009 && (
+                <>
+                  <div className="mt-1 flex justify-between text-sm font-semibold text-green-700">
+                    <span>Desconto</span>
+                    <span className="tabular-nums">−{formatMoney(moneyFrom(discount, cart.subtotal.currencyCode))}</span>
+                  </div>
+                  <div className="mt-1 flex items-baseline justify-between">
+                    <span className="text-xs font-bold uppercase tracking-[0.14em]">Total</span>
+                    <span className="text-xl font-extrabold tabular-nums">{formatMoney(cart.total)}</span>
+                  </div>
+                </>
+              )}
+              <p className="mt-1 text-xs text-muted">O frete final aparece no checkout, antes de você pagar.</p>
 
               {cart?.checkoutUrl ? (
                 <a

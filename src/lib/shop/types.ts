@@ -107,7 +107,11 @@ export type Cart = {
   totalQuantity: number;
   subtotal: Money;
   total: Money;
+  /** Cupons digitados; `applicable` diz se a Shopify aceitou para estes itens. */
+  discountCodes?: { code: string; applicable: boolean }[];
   lines: CartLine[];
 };
+
+export type ShippingQuote = { title: string; description: string | null; cost: Money };
 
 export type ProductSort = "default" | "price-asc" | "price-desc" | "newest" | "title";

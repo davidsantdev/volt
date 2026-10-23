@@ -1,12 +1,14 @@
 "use client";
 
-import { useId, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { ProductImage } from "@/components/art/product-image";
 import { useCart } from "@/components/cart/cart-provider";
 import { Price } from "@/components/shop/price";
+import { SizeGuideButton } from "@/components/shop/size-guide";
 import { Button } from "@/components/ui/button";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { site } from "@/config/site";
+import { installmentsFor } from "@/lib/promos";
 import { colorInfo, colorLabel, optionLabel, sizeLabel } from "@/lib/shop/labels";
 import type { ArtSpec, Colorway, Product, ShopImage, Variant } from "@/lib/shop/types";
 import { cn, discountPercent, formatMoney, moneyFrom } from "@/lib/utils";
@@ -96,6 +98,25 @@ export function ProductExperience({
   const [picked, setPicked] = useState<{ key: string; index: number } | null>(null);
   const [missing, setMissing] = useState<string[]>([]);
   const optionsRef = useRef<HTMLDivElement>(null);
+  const buyRef = useRef<HTMLDivElement>(null);
+  // Barra fixa de compra no celular: aparece quando o botão principal sai da tela (e some sobre o rodapé).
+  const [buyInView, setBuyInView] = useState(true);
+  const [footerInView, setFooterInView] = useState(false);
+
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+    const buy = buyRef.current;
+    const footer = document.querySelector("footer");
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === buy) setBuyInView(entry.isIntersecting);
+        else setFooterInView(entry.isIntersecting);
+      }
+    });
+    if (buy) observer.observe(buy);
+    if (footer) observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
 
   const variant = useMemo(() => findVariant(product, selection), [product, selection]);
   const slides = useMemo(() => buildSlides(product, variant), [product, variant]);
@@ -147,6 +168,13 @@ export function ProductExperience({
       : null;
 
   const optionViews = product.options.map((option) => ({ option, isColor: isColorOption(option) }));
+  const installments = installmentsFor(price);
+  const firstMissing = optionViews.find(({ option }) => !selection[option.name]);
+  const stickyLabel = unavailable
+    ? "Esgotado"
+    : variant
+      ? "Adicionar"
+      : `Escolher ${firstMissing?.isColor ? "cor" : optionLabel(firstMissing?.option.name ?? "opção").toLowerCase()}`;
 
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-14">
@@ -218,6 +246,7 @@ export function ProductExperience({
             {Math.round(site.pixDiscount * 100)}% off)
           </p>
         )}
+        {installments && <p className="mt-1 text-sm text-ink-soft">{installments}</p>}
 
         <div ref={optionsRef} className="mt-7 space-y-6">
           {optionViews.map(({ option, isColor }) => (
@@ -229,6 +258,7 @@ export function ProductExperience({
                     {isColor ? colorLabel(selection[option.name]) : sizeLabel(selection[option.name])}
                   </span>
                 )}
+                {!isColor && optionLabel(option.name) === "Tamanho" && <SizeGuideButton productTitle={product.title} />}
               </legend>
               <div className="flex flex-wrap gap-2">
                 {option.values.map((value) => {
@@ -283,7 +313,7 @@ export function ProductExperience({
           </p>
         )}
 
-        <div className="mt-8 grid grid-cols-[auto_minmax(0,1fr)] gap-3">
+        <div ref={buyRef} className="mt-8 grid grid-cols-[auto_minmax(0,1fr)] gap-3">
           <QuantityStepper
             value={quantity}
             onChange={setQuantity}
@@ -314,6 +344,28 @@ export function ProductExperience({
         {benefits}
         {details}
       </div>
+
+      {!buyInView && !footerInView && (
+        <div
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-white/95 px-4 pt-3 backdrop-blur lg:hidden"
+          style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
+        >
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[11px] font-extrabold uppercase tracking-[0.04em]">{product.title}</p>
+              <p className="text-sm font-extrabold tabular-nums">{formatMoney(price)}</p>
+            </div>
+            <Button
+              size="lg"
+              className="shrink-0 px-6"
+              onClick={() => void handleAdd()}
+              disabled={unavailable || isPending}
+            >
+              {isPending ? "Adicionando…" : stickyLabel}
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
