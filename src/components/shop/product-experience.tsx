@@ -18,6 +18,11 @@ type Slide = { image: ShopImage | null; art?: ArtSpec; tone: Tone };
 // "颜色" é o nome chinês da opção de cor que alguns fornecedores deixam na Shopify.
 const COLOR_OPTION = /^(cor|color|colour|颜色|颜色分类)$/i;
 
+/** Opção de cor pelo nome ou, quando o fornecedor a chamou de outra coisa ("Specifications"), porque todos os valores são cores conhecidas. */
+function isColorOption(option: { name: string; values: string[] }) {
+  return COLOR_OPTION.test(option.name) || (option.values.length > 0 && option.values.every((value) => colorInfo(value)));
+}
+
 const TONE_CLASS: Record<Tone, string> = {
   mist: "bg-mist",
   volt: "bg-volt",
@@ -31,7 +36,7 @@ function initialSelection(product: Product): Selection {
   for (const option of product.options) {
     if (option.values.length === 1) {
       selection[option.name] = option.values[0];
-    } else if (COLOR_OPTION.test(option.name) && first) {
+    } else if (isColorOption(option) && first) {
       // Cor já vem escolhida; tamanho o cliente escolhe (menos devolução por tamanho errado).
       selection[option.name] =
         first.selectedOptions.find((item) => item.name === option.name)?.value ?? option.values[0];
@@ -141,6 +146,8 @@ export function ProductExperience({
       ? moneyFrom(Number(price.amount) * (1 - site.pixDiscount), price.currencyCode)
       : null;
 
+  const optionViews = product.options.map((option) => ({ option, isColor: isColorOption(option) }));
+
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-14">
       {/* Galeria */}
@@ -213,13 +220,13 @@ export function ProductExperience({
         )}
 
         <div ref={optionsRef} className="mt-7 space-y-6">
-          {product.options.map((option) => (
+          {optionViews.map(({ option, isColor }) => (
             <fieldset key={option.name} aria-describedby={missing.includes(option.name) ? `${uid}-error` : undefined}>
               <legend className="mb-3 flex items-baseline gap-2 text-[11px] font-bold uppercase tracking-[0.16em]">
-                {optionLabel(option.name)}
+                {isColor ? "Cor" : optionLabel(option.name)}
                 {selection[option.name] && (
                   <span className="text-xs font-semibold normal-case tracking-normal text-muted">
-                    {COLOR_OPTION.test(option.name) ? colorLabel(selection[option.name]) : sizeLabel(selection[option.name])}
+                    {isColor ? colorLabel(selection[option.name]) : sizeLabel(selection[option.name])}
                   </span>
                 )}
               </legend>
@@ -227,7 +234,6 @@ export function ProductExperience({
                 {option.values.map((value) => {
                   const id = `${uid}-${option.name}-${value}`.replace(/\s+/g, "-");
                   const available = valueAvailable(product, selection, option.name, value);
-                  const isColor = COLOR_OPTION.test(option.name);
                   const swatch = isColor ? colorInfo(value)?.hex : undefined;
                   return (
                     <div key={value}>
@@ -269,7 +275,11 @@ export function ProductExperience({
 
         {missing.length > 0 && (
           <p id={`${uid}-error`} role="alert" className="mt-4 text-sm font-semibold text-red-700">
-            Selecione {missing.map((name) => optionLabel(name).toLowerCase()).join(" e ")} para continuar.
+            Selecione{" "}
+            {missing
+              .map((name) => (optionViews.find((view) => view.option.name === name)?.isColor ? "Cor" : optionLabel(name)).toLowerCase())
+              .join(" e ")}{" "}
+            para continuar.
           </p>
         )}
 

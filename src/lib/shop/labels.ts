@@ -12,6 +12,7 @@ const OPTION_LABELS: Record<string, string> = {
   size: "Tamanho",
   尺码: "Tamanho",
   尺寸: "Tamanho",
+  capacity: "Medidas",
   style: "Estilo",
   material: "Material",
 };
