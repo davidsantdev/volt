@@ -7,7 +7,11 @@
 const OPTION_LABELS: Record<string, string> = {
   color: "Cor",
   colour: "Cor",
+  颜色: "Cor",
+  颜色分类: "Cor",
   size: "Tamanho",
+  尺码: "Tamanho",
+  尺寸: "Tamanho",
   style: "Estilo",
   material: "Material",
 };
@@ -71,6 +75,23 @@ const COLORS: Record<string, ColorInfo> = {
   lightgreen: { label: "Verde-claro", hex: "#b9e3b0" },
   darkgreen: { label: "Verde-escuro", hex: "#1f5a3a" },
   armygreen: { label: "Verde-militar", hex: "#6b7050" },
+  militarygreen: { label: "Verde-militar", hex: "#5b6b3a" },
+  graygreen: { label: "Verde-acinzentado", hex: "#6f7d6a" },
+  graycoffee: { label: "Cinza-café", hex: "#7c7360" },
+  lightblue: { label: "Azul-claro", hex: "#a9cdf0" },
+  darkblue: { label: "Azul-escuro", hex: "#1f3a6e" },
+  navy: { label: "Azul-marinho", hex: "#1d2a52" },
+  fogblue: { label: "Azul-névoa", hex: "#8fa9c9" },
+  hazeblue: { label: "Azul-claro", hex: "#a9c4e8" },
+  grayblue: { label: "Azul-acinzentado", hex: "#8f9bb3" },
+  volcanicash: { label: "Cinza-vulcânico", hex: "#8a8d90" },
+  taropurple: { label: "Roxo-taro", hex: "#b6a4dc" },
+  offwhite: { label: "Off-white", hex: "#efeadc" },
+  winered: { label: "Vinho", hex: "#6d1f2f" },
+  wine: { label: "Vinho", hex: "#6d1f2f" },
+  rose: { label: "Rosa-choque", hex: "#e0457b" },
+  aqua: { label: "Turquesa", hex: "#58cfd6" },
+  khaki: { label: "Cáqui", hex: "#b9a77a" },
   purple: { label: "Roxo", hex: "#7b4dff" },
   giantpurple: { label: "Roxo", hex: "#5b2a5e" },
   darkpurple: { label: "Roxo-escuro", hex: "#4a2748" },
@@ -95,10 +116,26 @@ export function colorLabel(value: string) {
   return colorInfo(value)?.label ?? value;
 }
 
-/** "Black / S" -> "Preto / S" (só traduz as partes que são cores conhecidas). */
+const SIZE_LABELS: Record<string, string> = {
+  onesize: "Único",
+  freesize: "Único",
+  onesizefitsall: "Único",
+};
+
+/** "One Size" -> "Único"; os demais tamanhos (S, M, L, 2XL, 40...) ficam como vieram. */
+export function sizeLabel(value: string) {
+  return SIZE_LABELS[normalize(value)] ?? value;
+}
+
+/** Rótulo de qualquer valor de opção: cor traduzida, tamanho único em português ou o valor como veio. */
+export function valueLabel(value: string) {
+  return colorInfo(value)?.label ?? sizeLabel(value);
+}
+
+/** "Black / S" -> "Preto / S" (só traduz as partes que são cores ou tamanho único conhecidos). */
 export function variantLabel(title: string) {
   return title
     .split(" / ")
-    .map((part) => colorLabel(part))
+    .map((part) => valueLabel(part))
     .join(" / ");
 }

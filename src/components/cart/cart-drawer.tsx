@@ -8,7 +8,7 @@ import { Drawer } from "@/components/ui/drawer";
 import { BagIcon, CloseIcon } from "@/components/ui/icons";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { site } from "@/config/site";
-import { colorLabel } from "@/lib/shop/labels";
+import { valueLabel } from "@/lib/shop/labels";
 import type { CartLine } from "@/lib/shop/types";
 import { formatMoney, isOnSale, moneyFrom } from "@/lib/utils";
 
@@ -49,7 +49,7 @@ function FreeShippingProgress({ subtotal, currency }: { subtotal: number; curren
 function Line({ line }: { line: CartLine }) {
   const { setQuantity, removeLine, close, isPending } = useCart();
   const sale = isOnSale(line.unitPrice, line.compareAtUnitPrice);
-  const options = line.selectedOptions.map((option) => colorLabel(option.value)).join(" · ");
+  const options = line.selectedOptions.map((option) => valueLabel(option.value)).join(" · ");
 
   return (
     <li className="flex gap-4 py-5">

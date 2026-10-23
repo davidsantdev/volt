@@ -7,7 +7,7 @@ import { Price } from "@/components/shop/price";
 import { Button } from "@/components/ui/button";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { site } from "@/config/site";
-import { colorInfo, colorLabel, optionLabel } from "@/lib/shop/labels";
+import { colorInfo, colorLabel, optionLabel, sizeLabel } from "@/lib/shop/labels";
 import type { ArtSpec, Colorway, Product, ShopImage, Variant } from "@/lib/shop/types";
 import { cn, discountPercent, formatMoney, moneyFrom } from "@/lib/utils";
 
@@ -15,7 +15,8 @@ type Selection = Record<string, string>;
 type Tone = "mist" | "volt" | "lime" | "ink";
 type Slide = { image: ShopImage | null; art?: ArtSpec; tone: Tone };
 
-const COLOR_OPTION = /^(cor|color|colour)$/i;
+// "颜色" é o nome chinês da opção de cor que alguns fornecedores deixam na Shopify.
+const COLOR_OPTION = /^(cor|color|colour|颜色|颜色分类)$/i;
 
 const TONE_CLASS: Record<Tone, string> = {
   mist: "bg-mist",
@@ -218,7 +219,7 @@ export function ProductExperience({
                 {optionLabel(option.name)}
                 {selection[option.name] && (
                   <span className="text-xs font-semibold normal-case tracking-normal text-muted">
-                    {COLOR_OPTION.test(option.name) ? colorLabel(selection[option.name]) : selection[option.name]}
+                    {COLOR_OPTION.test(option.name) ? colorLabel(selection[option.name]) : sizeLabel(selection[option.name])}
                   </span>
                 )}
               </legend>
@@ -256,7 +257,7 @@ export function ProductExperience({
                             style={{ backgroundColor: swatch }}
                           />
                         )}
-                        {isColor ? colorLabel(value) : value}
+                        {isColor ? colorLabel(value) : sizeLabel(value)}
                       </label>
                     </div>
                   );
