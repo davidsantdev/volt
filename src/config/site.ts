@@ -35,7 +35,7 @@ export const site = {
   currency: "BRL",
 
   /** Imagem de compartilhamento (1200×630) em /public. */
-  ogImage: "/og.png",
+  ogImage: "/og.jpg",
 
   title: "VOLT | Roupas de academia com conforto e performance",
   tagline: "Roupas de academia com conforto de verdade",

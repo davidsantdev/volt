@@ -132,7 +132,7 @@ produtos (texto copiado do fornecedor é conteúdo duplicado e rende pouco no Go
 | Nome, textos, frete grátis, Pix, CNPJ, redes, menu | [src/config/site.ts](src/config/site.ts) |
 | Cores e fonte | `@theme` em [src/app/globals.css](src/app/globals.css) |
 | Logo | [src/components/layout/logo.tsx](src/components/layout/logo.tsx) e `src/app/icon.svg` |
-| Imagem de compartilhamento e ícones | `public/og.png` (1200×630), `public/icon-192.png`, `public/icon-512.png`, `src/app/apple-icon.png`, `src/app/favicon.ico` |
+| Imagem de compartilhamento e ícones | `public/og.jpg` (1200×630, fotos do topo da home), `public/icon-192.png`, `public/icon-512.png`, `src/app/apple-icon.png`, `src/app/favicon.ico` |
 | Fotos do topo da home, das categorias e da faixa editorial; capa de produto cuja 1ª foto é uma colagem | [src/config/merch.ts](src/config/merch.ts) |
 
 As ilustrações em `src/components/art` existem só para o modo demonstração; com a Shopify conectada, as fotos dos

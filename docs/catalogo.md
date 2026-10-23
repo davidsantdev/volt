@@ -65,6 +65,22 @@ R$ 89,90**; acessórios (boné, pochete) **R$ 39,90 a R$ 59,90**.
 > gateway (Pix/cartão) nem anúncios. Confira o custo total na SIHI e ajuste. A planilha
 > [catalogo-produtos.csv](catalogo-produtos.csv) traz custo, preço e a relação entre os dois para cada produto.
 
+## Descrições das coleções para atualizar na Shopify
+
+As descrições foram escritas quando a loja só tinha peças femininas e algumas prometem tecido. Hoje aparecem
+abaixo do título de cada categoria e na busca do Google. Cole os textos abaixo em *Shopify → Produtos → Coleções →
+(coleção) → Descrição* (as que não estão aqui continuam certas):
+
+| Coleção | O que está errado | Texto novo |
+| --- | --- | --- |
+| Feminino | "ótima modelagem" é promessa | Roupas de academia femininas: conjuntos, tops, regatas, shorts, moletons e jaquetas para treinar com conforto e estilo, do aquecimento ao pós-treino. |
+| Jaquetas | diz "femininas", mas tem jaqueta masculina | Jaquetas esportivas com zíper, femininas e masculinas, para o aquecimento, a corrida em dias frios e o dia a dia. |
+| Regatas e camisetas | diz "femininas" (tem camisetas masculinas) e promete "tecidos leves e elásticos" | Regatas e camisetas de treino, femininas e masculinas, para musculação, corrida e dia a dia, em cores para combinar com tudo. |
+| Lançamentos | diz "roupas fitness femininas" (tem peças masculinas e acessórios) | As peças que acabaram de chegar: roupas de academia femininas e masculinas e acessórios de treino. |
+| Shorts | promete "tecido macio" e "ajuste firme" | Shorts de treino femininos de cintura alta, do ciclista ao soltinho com cordão, para academia, corrida, yoga e dia a dia. |
+| Tops esportivos | promete "boa sustentação" | Tops esportivos e de yoga femininos, com modelos de costas nadador e de alça única, para musculação, corrida e yoga. |
+| Bonés e acessórios | não cita bolsas nem o colete | Bonés, bolsas, pochetes e colete de hidratação para levar o essencial ao treino e à corrida. |
+
 ## Como chegar a 100+ produtos
 
 1. **Gerente de contas da SIHI:** envie o pedido de [pedido-produtos-sihi.md](pedido-produtos-sihi.md). É grátis e é o

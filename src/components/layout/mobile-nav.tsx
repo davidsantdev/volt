@@ -1,13 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Logo } from "@/components/layout/logo";
 import { ArrowRightIcon, CloseIcon, MenuIcon } from "@/components/ui/icons";
 import { Drawer } from "@/components/ui/drawer";
 import type { NavItem } from "@/config/site";
 
-export function MobileNav({ items }: { items: NavItem[] }) {
+/**
+ * Menu do celular: links principais e, embaixo, as categorias com foto (como no app da Gymshark).
+ * `categories` chega pronto do servidor, para as fotos e ilustrações não pesarem no JavaScript de todas as páginas.
+ */
+export function MobileNav({ items, categories }: { items: NavItem[]; categories?: ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -48,6 +52,17 @@ export function MobileNav({ items }: { items: NavItem[] }) {
                 </li>
               ))}
             </ul>
+
+            {categories && (
+              // Clique em qualquer categoria fecha o menu (a navegação acontece no próprio link).
+              <div
+                onClick={(event) => {
+                  if ((event.target as HTMLElement).closest("a")) setOpen(false);
+                }}
+              >
+                {categories}
+              </div>
+            )}
           </nav>
         </div>
       </Drawer>
