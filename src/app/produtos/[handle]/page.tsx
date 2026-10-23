@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { JsonLd } from "@/components/seo/json-ld";
+import { FlagshipDetails } from "@/components/shop/flagship-details";
 import { ProductBenefits, ProductDetails, ProductHeader } from "@/components/shop/product-details";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductExperience } from "@/components/shop/product-experience";
@@ -9,6 +10,7 @@ import { RecentlyViewed } from "@/components/shop/recently-viewed";
 import { Rail } from "@/components/ui/rail";
 import { railItem } from "@/components/ui/rail-item";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { merch } from "@/config/merch";
 import { site } from "@/config/site";
 import { pageMetadata, productJsonLd } from "@/lib/seo";
 import { getProduct, getProductHandles, getRecommendations } from "@/lib/shop";
@@ -65,6 +67,8 @@ export default async function ProductPage({ params }: PageProps<"/produtos/[hand
 
   const related = (await getRecommendations(product.handle, product.id)).slice(0, 8);
   const category = product.collections[0];
+  // Carro-chefe (o dos anúncios): kits com desconto, destaques e perguntas próprias.
+  const flagship = product.handle === merch.flagship.product;
 
   return (
     <article className="container-page py-8 sm:py-12">
@@ -83,8 +87,11 @@ export default async function ProductPage({ params }: PageProps<"/produtos/[hand
           header={<ProductHeader product={product} />}
           benefits={<ProductBenefits />}
           details={<ProductDetails product={product} />}
+          bundles={flagship ? merch.flagship.bundles : undefined}
         />
       </div>
+
+      {flagship && <FlagshipDetails />}
 
       {related.length > 0 && (
         <section aria-labelledby="relacionados" className="mt-16 sm:mt-24">

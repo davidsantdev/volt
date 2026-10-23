@@ -12,7 +12,51 @@ export type PhotoPick = { product: string; photo?: string };
 /** Vitrine de preço baixo: produtos com este tipo (Shopify → Produto → Tipo de produto); `collection` é o "Ver todas". */
 export type DealPick = { title: string; type: string; collection: string };
 
+/** Kit do carro-chefe: `quantity` peças com `off` reais de desconto no total (desconto automático da Shopify). */
+export type Bundle = { quantity: number; off: number };
+
 export const merch = {
+  /**
+   * Produto carro-chefe, o dos anúncios: ganha uma faixa na home e, na página dele, destaques e perguntas próprias.
+   * Link para os anúncios: /produtos/<product>. Produto que não existir na loja: nada disso aparece.
+   */
+  flagship: {
+    product: "legging-empina-bumbum-sem-costura-cintura-alta",
+    eyebrow: "Destaque da loja",
+    title: "Legging empina bumbum",
+    text: "Sem costura, de cintura alta e com franzido atrás. Em preto e cinza mescla, do P ao 2XL.",
+    cta: "Quero a minha",
+    /**
+     * Kits com desconto ("2 por R$ 159,90"). SÓ preencha depois de criar em Shopify → Descontos, para cada kit, um
+     * desconto AUTOMÁTICO de valor fixo neste produto, "uma vez por pedido", com quantidade mínima igual a `quantity`
+     * (o site só mostra a conta; quem aplica o desconto é a Shopify). Vazio = sem kits.
+     */
+    bundles: [] as Bundle[],
+    highlights: [
+      { title: "Franzido atrás", text: "A costura franzida no bumbum é o detalhe que dá o nome de empina bumbum." },
+      { title: "Cintura alta", text: "O cós sobe até a cintura e cobre o abdômen." },
+      { title: "Sem costura", text: "Malha inteiriça com textura listrada, sem costuras laterais." },
+      { title: "Do P ao 2XL", text: "Numeração asiática, que veste menor: use o guia de tamanhos antes de escolher." },
+    ],
+    faq: [
+      {
+        question: "Qual tamanho devo escolher?",
+        answer:
+          "A numeração segue o padrão asiático e costuma vestir menor. Confira o guia de tamanhos ao lado da escolha de tamanho e, em dúvida entre dois, escolha o maior.",
+      },
+      {
+        question: "Posso devolver se não gostar?",
+        answer:
+          "Sim. Você tem 7 dias após o recebimento para desistir da compra, como manda o Código de Defesa do Consumidor. Para trocar de tamanho, fale com a gente.",
+      },
+      {
+        question: "Quanto custa o frete e quando chega?",
+        answer:
+          "Calcule pelo CEP no carrinho. O valor e o prazo finais aparecem no checkout, antes de você pagar, e o código de rastreio chega por e-mail quando o pedido é enviado.",
+      },
+    ],
+  },
+
   /**
    * Ordem dos "Destaques" da home enquanto não existir a coleção "Mais vendidos" (que passa a valer sozinha).
    * Primeiro os produtos com foto de modelo; os que não estiverem aqui vêm depois, na ordem da Shopify.

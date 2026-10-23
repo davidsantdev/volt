@@ -3,6 +3,7 @@ import { CategoryTiles } from "@/components/home/category-tiles";
 import { Deals } from "@/components/home/deals";
 import { Editorial } from "@/components/home/editorial";
 import { Faq } from "@/components/home/faq";
+import { Flagship } from "@/components/home/flagship";
 import { Hero } from "@/components/home/hero";
 import { NewArrivals } from "@/components/home/new-arrivals";
 import { SeoText } from "@/components/home/seo-text";
@@ -21,6 +22,7 @@ export default function HomePage() {
       <SetupNotice />
       <Hero />
       <TrustStrip />
+      <Flagship />
       <Deals />
       <TopSelling />
       <CategoryTiles />

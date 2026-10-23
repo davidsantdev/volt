@@ -9,11 +9,12 @@ import { SizeGuideButton } from "@/components/shop/size-guide";
 import { Button } from "@/components/ui/button";
 import { CloseIcon } from "@/components/ui/icons";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
+import type { Bundle } from "@/config/merch";
 import { site } from "@/config/site";
 import { trackViewItem } from "@/lib/analytics";
 import { installmentsFor } from "@/lib/promos";
 import { colorInfo, colorLabel, isColorOption, optionLabel, sizeLabel } from "@/lib/shop/labels";
-import type { ArtSpec, Colorway, Product, ShopImage, Variant } from "@/lib/shop/types";
+import type { ArtSpec, Colorway, Money, Product, ShopImage, Variant } from "@/lib/shop/types";
 import { cn, discountPercent, formatMoney, moneyFrom } from "@/lib/utils";
 
 type Selection = Record<string, string>;
@@ -270,17 +271,101 @@ function Gallery({
   );
 }
 
+/** Valor de um kit: `quantity` unidades com `off` reais de desconto no total. */
+function bundleTotal(unit: Money, bundle: Bundle) {
+  const full = Number(unit.amount) * bundle.quantity;
+  return { full, total: Math.max(full - bundle.off, 0) };
+}
+
+/**
+ * Escolha de kit do carro-chefe (merch.flagship.bundles). O site só mostra a conta: quem aplica o desconto é o
+ * desconto automático da Shopify, que vale para o total de unidades do produto no carrinho (cores misturadas inclusive).
+ */
+function BundlePicker({
+  bundles,
+  unit,
+  value,
+  onChange,
+}: {
+  bundles: Bundle[];
+  unit: Money;
+  value: number;
+  onChange: (quantity: number) => void;
+}) {
+  const uid = useId();
+  const options: Bundle[] = [{ quantity: 1, off: 0 }, ...bundles.filter((bundle) => bundle.quantity > 1)];
+  return (
+    <fieldset className="mt-7">
+      <legend className="mb-3 text-[11px] font-bold uppercase tracking-[0.16em]">Escolha seu kit</legend>
+      <div className="space-y-2">
+        {options.map((option) => {
+          const { full, total } = bundleTotal(unit, option);
+          const id = `${uid}-kit-${option.quantity}`;
+          return (
+            <div key={option.quantity}>
+              <input
+                id={id}
+                type="radio"
+                name={`${uid}-kit`}
+                checked={value === option.quantity}
+                onChange={() => onChange(option.quantity)}
+                className="peer sr-only"
+              />
+              <label
+                htmlFor={id}
+                className={cn(
+                  "flex cursor-pointer items-center justify-between gap-3 rounded-card border-2 border-line px-4 py-3 transition-colors hover:border-ink/60",
+                  "peer-checked:border-ink peer-checked:bg-mist",
+                  "peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-ink",
+                )}
+              >
+                <span className="min-w-0">
+                  <span className="block text-sm font-extrabold">
+                    {option.quantity} {option.quantity === 1 ? "unidade" : "unidades"}
+                  </span>
+                  {option.off > 0 && (
+                    <span className="block text-xs text-muted">
+                      {formatMoney(moneyFrom(total / option.quantity, unit.currencyCode))} cada
+                    </span>
+                  )}
+                </span>
+                <span className="flex shrink-0 flex-col items-end">
+                  {option.off > 0 && (
+                    <span className="mb-1 rounded-full bg-volt px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider">
+                      Economize {formatMoney(moneyFrom(option.off, unit.currencyCode))}
+                    </span>
+                  )}
+                  <span className="font-extrabold tabular-nums">{formatMoney(moneyFrom(total, unit.currencyCode))}</span>
+                  {option.off > 0 && (
+                    <s className="text-xs text-muted tabular-nums">{formatMoney(moneyFrom(full, unit.currencyCode))}</s>
+                  )}
+                </span>
+              </label>
+            </div>
+          );
+        })}
+      </div>
+      <p className="mt-2 text-xs leading-relaxed text-muted">
+        Quer cores ou tamanhos diferentes? Adicione uma de cada vez: o desconto vale para o total no carrinho.
+      </p>
+    </fieldset>
+  );
+}
+
 export function ProductExperience({
   product,
   header,
   benefits,
   details,
+  bundles = [],
 }: {
   product: Product;
   /** Eyebrow + H1 renderizados no servidor. */
   header: ReactNode;
   benefits: ReactNode;
   details: ReactNode;
+  /** Kits com desconto (só no carro-chefe, quando configurados em merch.ts). */
+  bundles?: Bundle[];
 }) {
   const { addItem, isPending } = useCart();
   const uid = useId();
@@ -332,7 +417,8 @@ export function ProductExperience({
   function select(name: string, value: string) {
     setSelection((current) => ({ ...current, [name]: value }));
     setMissing([]);
-    setQuantity(1);
+    // Com kits, trocar de cor/tamanho mantém o kit escolhido.
+    if (bundles.length === 0) setQuantity(1);
   }
 
   async function handleAdd() {
@@ -398,6 +484,14 @@ export function ProductExperience({
           </p>
         )}
         {installments && <p className="mt-1 text-sm text-ink-soft">{installments}</p>}
+        {bundles[0] && (
+          <p className="mt-1.5 text-sm text-ink-soft">
+            ou{" "}
+            <strong className="font-extrabold text-ink">
+              {bundles[0].quantity} por {formatMoney(moneyFrom(bundleTotal(price, bundles[0]).total, price.currencyCode))}
+            </strong>
+          </p>
+        )}
 
         <div ref={optionsRef} className="mt-7 space-y-6">
           {optionViews.map(({ option, isColor }) => (
@@ -464,14 +558,21 @@ export function ProductExperience({
           </p>
         )}
 
-        <div ref={buyRef} className="mt-8 grid grid-cols-[auto_minmax(0,1fr)] gap-3">
-          <QuantityStepper
-            value={quantity}
-            onChange={setQuantity}
-            max={10}
-            disabled={unavailable}
-            className="h-14 [&_button]:size-11"
-          />
+        {bundles.length > 0 && <BundlePicker bundles={bundles} unit={price} value={quantity} onChange={setQuantity} />}
+
+        <div
+          ref={buyRef}
+          className={cn("grid gap-3", bundles.length > 0 ? "mt-5 grid-cols-1" : "mt-8 grid-cols-[auto_minmax(0,1fr)]")}
+        >
+          {bundles.length === 0 && (
+            <QuantityStepper
+              value={quantity}
+              onChange={setQuantity}
+              max={10}
+              disabled={unavailable}
+              className="h-14 [&_button]:size-11"
+            />
+          )}
           <Button
             size="lg"
             className="min-w-0 px-4 sm:px-9"
