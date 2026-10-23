@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat } from "next/font/google";
+import { Barlow_Condensed, Montserrat } from "next/font/google";
 import "./globals.css";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { CartProvider } from "@/components/cart/cart-provider";
@@ -14,6 +14,14 @@ import { isShopifyConfigured } from "@/lib/shop/config";
 const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
+  display: "swap",
+});
+
+/** Só para títulos (classe `font-display`). Não é variável: carrega apenas os pesos usados. */
+const barlow = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["700", "800"],
+  variable: "--font-barlow",
   display: "swap",
 });
 
@@ -109,7 +117,7 @@ const organization = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang={site.lang} className={montserrat.variable}>
+    <html lang={site.lang} className={`${montserrat.variable} ${barlow.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <CartProvider shopify={isShopifyConfigured()}>
           <a

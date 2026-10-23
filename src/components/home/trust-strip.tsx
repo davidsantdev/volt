@@ -27,19 +27,16 @@ export function TrustStrip() {
   ];
 
   return (
-    <section aria-label="Vantagens" className="container-page">
-      <ul className="grid grid-cols-2 gap-px overflow-hidden rounded-card border border-line bg-line lg:grid-cols-4">
+    <section aria-label="Vantagens" className="border-b border-line bg-mist">
+      <ul className="container-page grid grid-cols-2 gap-x-4 gap-y-5 py-5 sm:py-6 lg:grid-cols-4 lg:gap-x-8">
         {items.map(({ Icon, title, text }) => (
-          <li
-            key={title}
-            className="flex flex-col items-start gap-3 bg-white p-4 sm:flex-row sm:items-center sm:gap-3.5 sm:p-5"
-          >
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-volt/25 text-ink">
-              <Icon className="size-[22px]" />
+          <li key={title} className="flex items-center gap-3">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white text-ink">
+              <Icon className="size-5" />
             </span>
             <div className="min-w-0">
-              <p className="text-xs font-extrabold uppercase tracking-[0.06em]">{title}</p>
-              <p className="mt-0.5 text-xs leading-snug text-muted">{text}</p>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.08em] sm:text-xs">{title}</p>
+              <p className="mt-0.5 text-[11px] leading-snug text-muted sm:text-xs">{text}</p>
             </div>
           </li>
         ))}

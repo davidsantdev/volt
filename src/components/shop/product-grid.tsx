@@ -196,7 +196,7 @@ export function ProductGrid({
           </button>
         </div>
       ) : (
-        <ul className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 md:grid-cols-3 lg:grid-cols-4">
           {filtered.map((product, index) => (
             <li key={product.id} className="flex">
               <ProductCard product={product} priority={index < 4} className="w-full" />

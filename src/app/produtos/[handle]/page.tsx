@@ -6,6 +6,9 @@ import { ProductBenefits, ProductDetails, ProductHeader } from "@/components/sho
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductExperience } from "@/components/shop/product-experience";
 import { RecentlyViewed } from "@/components/shop/recently-viewed";
+import { Rail } from "@/components/ui/rail";
+import { railItem } from "@/components/ui/rail-item";
+import { SectionHeading } from "@/components/ui/section-heading";
 import { site } from "@/config/site";
 import { pageMetadata, productJsonLd } from "@/lib/seo";
 import { getProduct, getProductHandles, getRecommendations } from "@/lib/shop";
@@ -60,7 +63,7 @@ export default async function ProductPage({ params }: PageProps<"/produtos/[hand
   const product = await getProduct(handle);
   if (!product) notFound();
 
-  const related = (await getRecommendations(product.handle, product.id)).slice(0, 4);
+  const related = (await getRecommendations(product.handle, product.id)).slice(0, 8);
   const category = product.collections[0];
 
   return (
@@ -84,17 +87,15 @@ export default async function ProductPage({ params }: PageProps<"/produtos/[hand
       </div>
 
       {related.length > 0 && (
-        <section aria-labelledby="relacionados" className="mt-20 sm:mt-28">
-          <h2 id="relacionados" className="mb-8 text-2xl font-extrabold uppercase tracking-[-0.03em] sm:text-3xl">
-            Você também vai gostar
-          </h2>
-          <ul className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+        <section aria-labelledby="relacionados" className="mt-16 sm:mt-24">
+          <SectionHeading id="relacionados" eyebrow="Complete o look" title="Você também vai gostar" />
+          <Rail label="Você também vai gostar">
             {related.map((item) => (
-              <li key={item.id} className="flex">
-                <ProductCard product={item} className="w-full" />
+              <li key={item.id} className={railItem}>
+                <ProductCard product={item} sizes="(min-width: 1024px) 25vw, (min-width: 640px) 31vw, 44vw" />
               </li>
             ))}
-          </ul>
+          </Rail>
         </section>
       )}
 

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Campaign } from "@/components/home/campaign";
-import { Categories } from "@/components/home/categories";
-import { Craft } from "@/components/home/craft";
+import { CategoryTiles } from "@/components/home/category-tiles";
+import { Editorial } from "@/components/home/editorial";
 import { Faq } from "@/components/home/faq";
 import { Hero } from "@/components/home/hero";
-import { Marquee } from "@/components/home/marquee";
 import { NewArrivals } from "@/components/home/new-arrivals";
+import { SeoText } from "@/components/home/seo-text";
 import { SetupNotice } from "@/components/home/setup-notice";
 import { TopSelling } from "@/components/home/top-selling";
 import { TrustStrip } from "@/components/home/trust-strip";
@@ -14,6 +13,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
 };
 
+/** Ordem das lojas que vendem: foto forte no topo, produtos logo em seguida, categorias, uma faixa editorial. */
 export default function HomePage() {
   return (
     <>
@@ -21,12 +21,11 @@ export default function HomePage() {
       <Hero />
       <TrustStrip />
       <TopSelling />
-      <Craft />
-      <Marquee />
-      <Campaign />
+      <CategoryTiles />
+      <Editorial />
       <NewArrivals />
-      <Categories />
       <Faq />
+      <SeoText />
     </>
   );
 }

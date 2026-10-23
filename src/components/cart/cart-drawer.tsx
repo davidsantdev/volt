@@ -58,20 +58,22 @@ function Line({ line }: { line: CartLine }) {
       <Link
         href={`/produtos/${line.productHandle}`}
         onClick={close}
-        className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-2xl bg-mist"
+        className="grid size-24 shrink-0 place-items-center overflow-hidden rounded-card bg-mist"
       >
         <ProductImage
           image={line.image}
           art={line.art}
           alt={line.productTitle}
           sizes="96px"
-          className="size-full p-2"
+          fit="cover"
+          blend={false}
+          className={line.image ? "size-full" : "size-full p-2"}
         />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-xs font-extrabold uppercase leading-snug tracking-[0.04em]">
+            <p className="text-[13px] font-semibold leading-snug">
               <Link href={`/produtos/${line.productHandle}`} onClick={close}>
                 {line.productTitle}
               </Link>

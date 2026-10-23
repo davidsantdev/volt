@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { SectionHeading } from "@/components/ui/section-heading";
 import type { Money, ShopImage } from "@/lib/shop/types";
 import { formatMoney } from "@/lib/utils";
 
@@ -43,25 +44,23 @@ export function RecentlyViewed({ current }: { current: Seen }) {
 
   return (
     <section aria-labelledby="vistos" className="mt-20 sm:mt-28">
-      <h2 id="vistos" className="mb-8 text-2xl font-extrabold uppercase tracking-[-0.03em] sm:text-3xl">
-        Vistos recentemente
-      </h2>
-      <ul className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+      <SectionHeading id="vistos" title="Vistos recentemente" />
+      <ul className="grid grid-cols-2 gap-x-3 gap-y-8 sm:gap-x-5 lg:grid-cols-4">
         {items.map((item) => (
           <li key={item.handle}>
             <Link href={`/produtos/${item.handle}`} className="group block">
-              <span className="relative block aspect-[4/5] overflow-hidden rounded-card bg-mist">
+              <span className="relative block aspect-square overflow-hidden rounded-card bg-mist">
                 {item.image && (
                   <Image
                     src={item.image.url}
                     alt={item.image.altText || item.title}
                     fill
                     sizes="(min-width: 1024px) 25vw, 50vw"
-                    className="object-contain p-2 transition-transform duration-500 group-hover:scale-[1.04] sm:p-4"
+                    className="object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                   />
                 )}
               </span>
-              <span className="mt-3 block text-[11px] font-extrabold uppercase leading-snug tracking-[0.06em] sm:text-xs">
+              <span className="mt-3 line-clamp-2 text-[13px] font-semibold leading-snug sm:text-sm">
                 {item.title}
               </span>
               <span className="mt-1 block text-sm font-bold tabular-nums">{formatMoney(item.price)}</span>

@@ -52,7 +52,7 @@ export function Faq() {
       <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <div>
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted">Dúvidas frequentes</p>
-          <h2 id="faq-title" className="mt-3 text-3xl font-extrabold uppercase leading-[1.02] tracking-[-0.035em] sm:text-5xl">
+          <h2 id="faq-title" className="mt-3 font-display text-[2.6rem] font-extrabold uppercase leading-[0.92] sm:text-6xl">
             Tudo que você precisa saber
           </h2>
           {whatsapp && (

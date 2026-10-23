@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
-type Variant = "solid" | "volt" | "outline" | "white";
+type Variant = "solid" | "volt" | "outline" | "white" | "outline-light";
 type Size = "sm" | "md" | "lg";
 
 const base =
@@ -13,6 +13,8 @@ const variants: Record<Variant, string> = {
   volt: "bg-volt text-ink hover:bg-ink hover:text-volt",
   outline: "border border-ink text-ink hover:bg-ink hover:text-white",
   white: "bg-white text-ink hover:bg-volt",
+  /** Sobre foto ou fundo escuro. */
+  "outline-light": "border border-white/80 text-white hover:border-white hover:bg-white hover:text-ink",
 };
 
 const sizes: Record<Size, string> = {

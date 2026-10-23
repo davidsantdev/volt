@@ -1,5 +1,6 @@
 import "server-only";
 import sanitizeHtml from "sanitize-html";
+import { merch } from "@/config/merch";
 import { site } from "@/config/site";
 import { getShopifyConfig } from "./config";
 import { sortOptionValues } from "./labels";
@@ -127,6 +128,7 @@ const PRODUCT_BASE = /* GraphQL */ `
 const PRODUCT_CARD = /* GraphQL */ `
   fragment ProductCardFields on Product {
     ...ProductBase
+    images(first: 6) { nodes { ...ImageFields } }
     variants(first: 30) { nodes { ...VariantFields } }
   }
 `;
@@ -249,9 +251,25 @@ function mapVariant(variant: GqlVariant): Variant {
   };
 }
 
+/**
+ * Capa curada em src/config/merch.ts primeiro (fornecedores costumam pôr uma colagem de cores como 1ª foto);
+ * sem curadoria, vale a ordem da Shopify.
+ */
+function orderImages(handle: string, featured: ShopImage | null, images: ShopImage[]) {
+  const all = images.length > 0 ? images : featured ? [featured] : [];
+  const pick = merch.covers[handle];
+  const cover = (pick ? all.find((image) => image.url.includes(pick)) : undefined) ?? featured ?? all[0] ?? null;
+  return { cover, images: cover ? [cover, ...all.filter((image) => image.url !== cover.url)] : all };
+}
+
 function mapProductSummary(node: GqlProduct): ProductSummary {
   const price = node.priceRange.minVariantPrice;
   const compareAt = node.compareAtPriceRange.minVariantPrice;
+  const { cover, images } = orderImages(
+    node.handle,
+    mapImage(node.featuredImage),
+    (node.images?.nodes ?? []).map((image) => mapImage(image)!),
+  );
   return {
     id: node.id,
     handle: node.handle,
@@ -262,7 +280,8 @@ function mapProductSummary(node: GqlProduct): ProductSummary {
     tags: [],
     availableForSale: node.availableForSale,
     createdAt: node.createdAt,
-    featuredImage: mapImage(node.featuredImage),
+    featuredImage: cover,
+    images,
     price,
     maxPrice: node.priceRange.maxVariantPrice,
     compareAtPrice: Number(compareAt.amount) > Number(price.amount) ? compareAt : null,
@@ -294,13 +313,11 @@ function cleanHtml(html: string) {
 
 function mapProduct(node: GqlProduct): Product {
   const summary = mapProductSummary(node);
-  const images = (node.images?.nodes ?? []).map((image) => mapImage(image)!).filter(Boolean);
   return {
     ...summary,
     description: node.description ?? "",
     descriptionHtml: cleanHtml(node.descriptionHtml ?? ""),
     updatedAt: node.updatedAt ?? node.createdAt,
-    images: images.length ? images : summary.featuredImage ? [summary.featuredImage] : [],
     seo: { title: node.seo?.title ?? null, description: node.seo?.description ?? null },
     collections: orderProductCollections(node.collections?.nodes ?? []),
   };

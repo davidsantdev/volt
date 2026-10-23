@@ -112,7 +112,7 @@ export function SearchDialog() {
                           )}
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block text-xs font-extrabold uppercase leading-snug tracking-[0.04em]">
+                          <span className="block text-[13px] font-semibold leading-snug">
                             {item.title}
                           </span>
                           <span className="mt-1 block text-sm font-bold tabular-nums">{formatMoney(item.price)}</span>

@@ -34,7 +34,7 @@ export function QuickAdd({ product }: { product: ProductSummary }) {
   if (!product.availableForSale) return null;
 
   const buttonClass =
-    "absolute right-3 top-3 z-10 grid size-9 place-items-center rounded-full bg-lime text-ink shadow-sm transition duration-200 hover:scale-110 hover:bg-ink hover:text-lime disabled:opacity-60";
+    "absolute bottom-2.5 right-2.5 z-10 grid size-10 place-items-center rounded-full bg-white text-ink shadow-[0_6px_18px_-6px_rgba(13,15,12,0.45)] transition duration-200 hover:bg-ink hover:text-volt disabled:opacity-60";
 
   // Cor × tamanho (ou mais) não cabe num seletor de cartão: leva para a página do produto.
   if (product.options.length > 1) {

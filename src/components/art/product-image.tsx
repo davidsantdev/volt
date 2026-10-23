@@ -14,6 +14,7 @@ export function ProductImage({
   sizes,
   priority = false,
   blend = true,
+  fit = "contain",
   className,
 }: {
   image: ShopImage | null;
@@ -22,6 +23,8 @@ export function ProductImage({
   sizes?: string;
   priority?: boolean;
   blend?: boolean;
+  /** `cover` preenche o espaço (fotos quadradas em miniaturas); `contain` mostra a foto inteira. */
+  fit?: "contain" | "cover";
   className?: string;
 }) {
   if (image) {
@@ -34,7 +37,7 @@ export function ProductImage({
         sizes={sizes}
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
-        className={cn("object-contain", blend && "mix-blend-multiply", className)}
+        className={cn(fit === "cover" ? "object-cover" : "object-contain", blend && "mix-blend-multiply", className)}
       />
     );
   }

@@ -17,7 +17,7 @@ export const metadata: Metadata = pageMetadata({
 export default function SearchPage({ searchParams }: PageProps<"/busca">) {
   return (
     <div className="container-page py-8 sm:py-12">
-      <h1 className="text-4xl font-extrabold uppercase leading-[1] tracking-[-0.04em] sm:text-6xl">Buscar</h1>
+      <h1 className="font-display text-[2.75rem] font-extrabold uppercase leading-[0.92] sm:text-6xl">Buscar</h1>
       <Suspense fallback={<GridSkeleton items={4} />}>
         <SearchView searchParams={searchParams} />
       </Suspense>

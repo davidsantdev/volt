@@ -131,7 +131,7 @@ produtos (texto copiado do fornecedor é conteúdo duplicado e rende pouco no Go
 | Cores e fonte | `@theme` em [src/app/globals.css](src/app/globals.css) |
 | Logo | [src/components/layout/logo.tsx](src/components/layout/logo.tsx) e `src/app/icon.svg` |
 | Imagem de compartilhamento e ícones | `public/og.png` (1200×630), `public/icon-192.png`, `public/icon-512.png`, `src/app/apple-icon.png`, `src/app/favicon.ico` |
-| Imagem do hero | [src/components/home/hero-art.tsx](src/components/home/hero-art.tsx) (troque `<Garment />` por um PNG recortado) |
+| Fotos do topo da home, das categorias e da faixa editorial; capa de produto cuja 1ª foto é uma colagem | [src/config/merch.ts](src/config/merch.ts) |
 
 As ilustrações em `src/components/art` existem só para o modo demonstração; com a Shopify conectada, as fotos dos
 produtos aparecem no lugar.

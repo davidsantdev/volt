@@ -136,13 +136,137 @@ function tonesFor(colorway: Colorway): Tone[] {
   return colorway === "volt" ? ["mist", "ink", "lime"] : ["mist", "volt", "lime"];
 }
 
+/** Variação que dá a foto: a escolhida ou, com só a cor escolhida, a primeira daquela cor. */
+function previewVariant(product: Product, selection: Selection): Variant | undefined {
+  return product.variants.find((variant) =>
+    variant.selectedOptions.every((item) => !selection[item.name] || selection[item.name] === item.value),
+  );
+}
+
 function buildSlides(product: Product, variant?: Variant): Slide[] {
   if (product.images.length > 0) {
-    return product.images.map((image) => ({ image, tone: "mist" as const }));
+    // A foto da cor escolhida vem primeiro.
+    const lead = variant?.image ? product.images.find((image) => image.url === variant.image!.url) : undefined;
+    const images = lead ? [lead, ...product.images.filter((image) => image !== lead)] : product.images;
+    return images.map((image) => ({ image, tone: "mist" as const }));
   }
   const art = variant?.art ?? product.art;
   if (!art) return [{ image: null, tone: "mist" }];
   return tonesFor(art.colorway).map((tone) => ({ image: null, art, tone }));
+}
+
+/** Foto (ou ilustração) cobrindo o quadrado; foto que não é quadrada aparece inteira. */
+function SlideMedia({ slide, alt, sizes, priority }: { slide: Slide; alt: string; sizes: string; priority: boolean }) {
+  if (slide.image) {
+    const square = Math.abs(slide.image.width / slide.image.height - 1) < 0.05;
+    return (
+      <Image
+        src={slide.image.url}
+        alt={slide.image.altText || alt}
+        fill
+        sizes={sizes}
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : "auto"}
+        className={square ? "object-cover" : "object-contain"}
+      />
+    );
+  }
+  return (
+    <ProductImage
+      image={null}
+      art={slide.art}
+      alt={alt}
+      blend={slide.tone !== "ink"}
+      className="absolute inset-0 size-full p-10 sm:p-16"
+    />
+  );
+}
+
+const DESKTOP_PHOTOS = 7;
+
+/**
+ * Uma lista só: carrossel de arrastar (tela cheia) no celular e grade de fotos grandes no desktop, como na
+ * Gymshark. Mesma marcação nos dois casos, para o navegador não baixar a mesma foto duas vezes.
+ */
+function Gallery({
+  slides,
+  title,
+  discount,
+  onZoom,
+}: {
+  slides: Slide[];
+  title: string;
+  discount: number;
+  onZoom: (index: number) => void;
+}) {
+  const [current, setCurrent] = useState(0);
+  const shown = Math.min(slides.length, DESKTOP_PHOTOS);
+  const hidden = slides.length - shown;
+  const wideFirst = shown % 2 === 1;
+
+  return (
+    <div className="bleed relative lg:mx-0">
+      <ul
+        onScroll={(event) =>
+          setCurrent(Math.round(event.currentTarget.scrollLeft / Math.max(event.currentTarget.clientWidth, 1)))
+        }
+        aria-label="Fotos do produto"
+        className="hide-scrollbar flex snap-x snap-mandatory overflow-x-auto lg:grid lg:grid-cols-2 lg:gap-2 lg:overflow-visible"
+      >
+        {slides.map((slide, index) => {
+          const wide = index === 0 && wideFirst;
+          return (
+            <li
+              key={slide.image?.url ?? `${slide.tone}-${index}`}
+              className={cn(
+                "relative aspect-square w-full shrink-0 snap-center overflow-hidden lg:w-auto lg:rounded-card",
+                TONE_CLASS[slide.tone],
+                wide && "lg:col-span-2",
+                index >= DESKTOP_PHOTOS && "lg:hidden",
+              )}
+            >
+              <SlideMedia
+                slide={slide}
+                alt={title}
+                priority={index === 0}
+                sizes={wide ? "(min-width: 1024px) 55vw, 100vw" : "(min-width: 1024px) 28vw, 100vw"}
+              />
+              {slide.image && (
+                <button
+                  type="button"
+                  onClick={() => onZoom(index)}
+                  aria-label={`Ampliar foto ${index + 1} de ${slides.length}`}
+                  className="absolute inset-0 cursor-zoom-in"
+                />
+              )}
+              {index === shown - 1 && hidden > 0 && (
+                <button
+                  type="button"
+                  onClick={() => onZoom(shown)}
+                  className="absolute inset-0 hidden place-items-center bg-black/45 text-sm font-extrabold uppercase tracking-[0.12em] text-white lg:grid"
+                >
+                  +{hidden} fotos
+                </button>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+      {discount > 0 && (
+        <span className="pointer-events-none absolute left-4 top-4 rounded-full bg-volt px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-ink">
+          -{discount}%
+        </span>
+      )}
+      {slides.length > 1 && (
+        <p
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-3 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold tabular-nums lg:hidden"
+        >
+          {Math.min(current, slides.length - 1) + 1} / {slides.length}
+        </p>
+      )}
+    </div>
+  );
 }
 
 export function ProductExperience({
@@ -161,7 +285,6 @@ export function ProductExperience({
   const uid = useId();
   const [selection, setSelection] = useState<Selection>(() => initialSelection(product));
   const [quantity, setQuantity] = useState(1);
-  const [picked, setPicked] = useState<{ key: string; index: number } | null>(null);
   const [missing, setMissing] = useState<string[]>([]);
   const [zoom, setZoom] = useState<number | null>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
@@ -186,14 +309,11 @@ export function ProductExperience({
   }, []);
 
   const variant = useMemo(() => findVariant(product, selection), [product, selection]);
-  const slides = useMemo(() => buildSlides(product, variant), [product, variant]);
-
-  // Slide ativo derivado (sem efeito): vale o que o cliente clicou na miniatura e, ao
-  // trocar de variação com foto própria, passa a valer a foto daquela variação.
-  const variantKey = variant?.image?.url ?? "";
-  const variantSlide = variantKey ? product.images.findIndex((image) => image.url === variantKey) : -1;
-  const activeSlide = picked && picked.key === variantKey ? picked.index : Math.max(variantSlide, 0);
-  const slide = slides[Math.min(activeSlide, slides.length - 1)];
+  const preview = useMemo(() => variant ?? previewVariant(product, selection), [product, selection, variant]);
+  const slides = useMemo(() => buildSlides(product, preview), [product, preview]);
+  const photos = useMemo(() => slides.flatMap((slide) => (slide.image ? [slide.image] : [])), [slides]);
+  // Trocar de cor recomeça a galeria pela foto daquela cor (o carrossel do celular volta ao início).
+  const galleryKey = slides[0]?.image?.url ?? preview?.art?.colorway ?? "galeria";
 
   const price = variant?.price ?? product.price;
   const compareAt = variant ? variant.compareAtPrice : product.compareAtPrice;
@@ -244,66 +364,14 @@ export function ProductExperience({
       : `Escolher ${firstMissing?.isColor ? "cor" : optionLabel(firstMissing?.option.name ?? "opção").toLowerCase()}`;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-14">
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)] lg:gap-12">
       {/* Galeria */}
-      <div className="lg:sticky lg:top-28 lg:self-start">
-        <div className={cn("relative grid aspect-[4/5] place-items-center overflow-hidden rounded-[1.5rem]", TONE_CLASS[slide.tone])}>
-          <ProductImage
-            image={slide.image}
-            art={slide.art}
-            alt={product.title}
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            priority
-            blend={slide.tone !== "ink"}
-            className="size-full p-8 sm:p-14"
-          />
-          {slide.image && (
-            <button
-              type="button"
-              onClick={() => setZoom(Math.min(activeSlide, slides.length - 1))}
-              aria-label="Ampliar foto"
-              className="absolute inset-0 cursor-zoom-in"
-            />
-          )}
-          {discount > 0 && (
-            <span className="absolute left-4 top-4 rounded-full bg-ink px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-lime">
-              -{discount}%
-            </span>
-          )}
-        </div>
-
-        {slides.length > 1 && (
-          <ul className="hide-scrollbar mt-3 flex gap-3 overflow-x-auto" aria-label="Imagens do produto">
-            {slides.map((item, index) => (
-              <li key={index} className="shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setPicked({ key: variantKey, index })}
-                  aria-label={`Ver imagem ${index + 1} de ${slides.length}`}
-                  aria-current={index === activeSlide}
-                  className={cn(
-                    "grid size-[4.5rem] place-items-center overflow-hidden rounded-2xl border-2 transition-colors sm:size-20",
-                    TONE_CLASS[item.tone],
-                    index === activeSlide ? "border-ink" : "border-transparent hover:border-ink/40",
-                  )}
-                >
-                  <ProductImage
-                    image={item.image}
-                    art={item.art}
-                    alt=""
-                    sizes="80px"
-                    blend={item.tone !== "ink"}
-                    className="size-full p-1.5"
-                  />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+      <div>
+        <Gallery key={galleryKey} slides={slides} title={product.title} discount={discount} onZoom={setZoom} />
       </div>
 
-      {/* Informações e compra */}
-      <div>
+      {/* Informações e compra: fica parada ao lado da grade de fotos no desktop */}
+      <div className="lg:sticky lg:top-24 lg:self-start">
         {header}
 
         <div className="mt-5 flex flex-wrap items-end gap-x-4 gap-y-1">
@@ -420,10 +488,10 @@ export function ProductExperience({
         {details}
       </div>
 
-      {zoom !== null && product.images.length > 0 && (
+      {zoom !== null && photos.length > 0 && (
         <Lightbox
-          images={product.images}
-          index={Math.min(zoom, product.images.length - 1)}
+          images={photos}
+          index={Math.min(zoom, photos.length - 1)}
           title={product.title}
           onIndex={setZoom}
           onClose={() => setZoom(null)}

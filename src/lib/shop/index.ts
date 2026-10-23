@@ -1,15 +1,18 @@
 import { cacheLife, cacheTag } from "next/cache";
+import { merch, type PhotoPick } from "@/config/merch";
 import { site, type NavItem } from "@/config/site";
 import { isShopifyConfigured } from "./config";
 import * as mock from "./mock";
 import * as shopify from "./shopify";
 import type {
+  ArtSpec,
   Collection,
   CollectionWithProducts,
   PageContent,
   Product,
   ProductSort,
   ProductSummary,
+  ShopImage,
 } from "./types";
 
 /**
@@ -202,4 +205,68 @@ export async function getPage(handle: string): Promise<PageContent | null> {
   } catch {
     return mock.mockPage(handle);
   }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Curadoria da vitrine (src/config/merch.ts)                                 */
+/* -------------------------------------------------------------------------- */
+
+/** Uma foto de vitrine: a da Shopify ou, no modo demonstração, a ilustração. */
+export type Photo = { image: ShopImage | null; art?: ArtSpec; alt: string; href: string };
+
+function productPhoto(product: ProductSummary): Photo {
+  return { image: product.featuredImage, art: product.art, alt: product.title, href: `/produtos/${product.handle}` };
+}
+
+async function pickPhoto(pick: PhotoPick): Promise<Photo | null> {
+  const product = await getProduct(pick.product);
+  if (!product) return null;
+  const chosen = pick.photo ? product.images.find((image) => image.url.includes(pick.photo!)) : undefined;
+  const photo = productPhoto(product);
+  return chosen ? { ...photo, image: chosen } : photo;
+}
+
+/**
+ * Fotos escolhidas na curadoria. As que não existem mais (e todas, no modo demonstração) são trocadas pelos
+ * destaques da loja, para a seção nunca ficar pela metade.
+ */
+export async function getPhotos(picks: PhotoPick[]): Promise<Photo[]> {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag("products");
+  const found = (await Promise.all(picks.map(pickPhoto))).filter((photo): photo is Photo => photo !== null);
+  if (found.length >= picks.length) return found;
+  const used = new Set(found.map((photo) => photo.href));
+  const extra = (await getFeaturedProducts("best", 12))
+    .filter((product) => !used.has(`/produtos/${product.handle}`) && (product.featuredImage || product.art))
+    .slice(0, picks.length - found.length)
+    .map(productPhoto);
+  return [...found, ...extra];
+}
+
+export type CategoryTile = { handle: string; title: string; href: string; photo: Photo | null };
+
+/**
+ * Categorias com foto: a imagem da coleção na Shopify, senão a foto da curadoria, senão a capa do primeiro
+ * produto da coleção.
+ */
+export async function getCategoryTiles(): Promise<CategoryTile[]> {
+  "use cache";
+  cacheLife("catalog");
+  cacheTag("collections", "products");
+  const collections = (await getCollections()).filter(
+    (collection) => !site.collections.hidden.includes(collection.handle),
+  );
+  return Promise.all(
+    collections.map(async (collection): Promise<CategoryTile> => {
+      const href = `/colecoes/${collection.handle}`;
+      const base = { handle: collection.handle, title: collection.title, href };
+      if (collection.image) return { ...base, photo: { image: collection.image, alt: collection.title, href } };
+      const pick = merch.categories[collection.handle];
+      const picked = pick ? await pickPhoto(pick) : null;
+      if (picked) return { ...base, photo: { ...picked, alt: collection.title, href } };
+      const first = (await getCollection(collection.handle))?.products[0];
+      return { ...base, photo: first ? { ...productPhoto(first), alt: collection.title, href } : null };
+    }),
+  );
 }

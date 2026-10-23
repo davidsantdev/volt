@@ -11,7 +11,7 @@ export function ProductHeader({ product }: { product: Product }) {
   return (
     <>
       {kind && <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted">{kind}</p>}
-      <h1 className="mt-2 text-3xl font-extrabold uppercase leading-[1.02] tracking-[-0.035em] sm:text-4xl lg:text-[2.75rem]">
+      <h1 className="mt-2 font-display text-[2.15rem] font-extrabold uppercase leading-[0.95] sm:text-[2.6rem]">
         {product.title}
       </h1>
     </>
@@ -27,9 +27,9 @@ export function ProductBenefits() {
     { Icon: WindIcon, text: "Peça escolhida para treinar com conforto" },
   ];
   return (
-    <ul className="mt-8 space-y-3 rounded-card bg-mist p-5">
+    <ul className="mt-6 divide-y divide-line rounded-card border border-line">
       {items.map(({ Icon, text }) => (
-        <li key={text} className="flex items-center gap-3 text-[13px] font-semibold">
+        <li key={text} className="flex items-center gap-3 px-4 py-3 text-[13px] font-semibold">
           <Icon className="size-5 shrink-0" />
           {text}
         </li>

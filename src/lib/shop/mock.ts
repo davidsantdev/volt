@@ -358,6 +358,7 @@ function toSummary(product: Product): ProductSummary {
     availableForSale: product.availableForSale,
     createdAt: product.createdAt,
     featuredImage: product.featuredImage,
+    images: product.images,
     art: product.art,
     price: product.price,
     maxPrice: product.maxPrice,

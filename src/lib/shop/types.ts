@@ -44,7 +44,10 @@ export type ProductSummary = {
   tags: string[];
   availableForSale: boolean;
   createdAt: string;
+  /** Foto de capa (já considera a curadoria de src/config/merch.ts). */
   featuredImage: ShopImage | null;
+  /** Primeiras fotos do produto, a capa primeiro (o card usa a 2ª ao passar o mouse). */
+  images: ShopImage[];
   art?: ArtSpec;
   /** Menor preço entre as variantes. */
   price: Money;
@@ -59,7 +62,6 @@ export type Product = ProductSummary & {
   description: string;
   descriptionHtml: string;
   updatedAt: string;
-  images: ShopImage[];
   seo: { title: string | null; description: string | null };
   collections: { handle: string; title: string }[];
 };

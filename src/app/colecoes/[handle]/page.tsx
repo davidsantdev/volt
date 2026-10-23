@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { JsonLd } from "@/components/seo/json-ld";
+import { CategoryChips } from "@/components/shop/category-chips";
 import { ProductGrid } from "@/components/shop/product-grid";
 import { site } from "@/config/site";
 import { collectionJsonLd, pageMetadata } from "@/lib/seo";
@@ -41,12 +41,8 @@ export async function generateMetadata({ params }: PageProps<"/colecoes/[handle]
 
 export default async function CollectionPage({ params }: PageProps<"/colecoes/[handle]">) {
   const { handle } = await params;
-  const [collection, collections] = await Promise.all([getCollection(handle), getCollections()]);
+  const collection = await getCollection(handle);
   if (!collection) notFound();
-
-  const others = collections.filter(
-    (item) => item.handle !== collection.handle && !site.collections.hidden.includes(item.handle),
-  );
 
   return (
     <div className="container-page py-8 sm:py-12">
@@ -57,37 +53,20 @@ export default async function CollectionPage({ params }: PageProps<"/colecoes/[h
           { name: collection.title, href: `/colecoes/${collection.handle}` },
         ]}
       />
-      <header className="mb-10 mt-6 max-w-2xl">
-        <h1 className="text-4xl font-extrabold uppercase leading-[1] tracking-[-0.04em] sm:text-6xl">
+      <header className="mb-6 mt-5 max-w-2xl">
+        <h1 className="font-display text-[2.75rem] font-extrabold uppercase leading-[0.92] sm:text-6xl">
           {collection.title}
         </h1>
         {collection.description && (
-          <p className="mt-4 text-[15px] leading-relaxed text-ink-soft">{collection.description}</p>
+          <p className="mt-3 text-[15px] leading-relaxed text-ink-soft">{collection.description}</p>
         )}
       </header>
+      <CategoryChips current={collection.handle} />
 
       <ProductGrid
         products={collection.products}
         emptyMessage="Ainda não há produtos nesta coleção. Volte em breve!"
       />
-
-      {others.length > 0 && (
-        <nav aria-label="Outras categorias" className="mt-20">
-          <h2 className="mb-5 text-[11px] font-bold uppercase tracking-[0.18em] text-muted">Veja também</h2>
-          <ul className="flex flex-wrap gap-2.5">
-            {others.map((item) => (
-              <li key={item.handle}>
-                <Link
-                  href={`/colecoes/${item.handle}`}
-                  className="inline-flex h-11 items-center rounded-full border border-line px-5 text-xs font-bold uppercase tracking-[0.1em] transition-colors hover:border-ink hover:bg-ink hover:text-white"
-                >
-                  {item.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
 
       <JsonLd data={collectionJsonLd(collection, collection.products)} />
     </div>
