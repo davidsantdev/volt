@@ -1,0 +1,257 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-montserrat), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+
+  --color-ink: #0d0f0c;
+  --color-ink-soft: #40443d;
+  --color-muted: #666b62;
+  --color-mist: #f3f4ef;
+  --color-line: #e2e4dc;
+  --color-volt: #5ce52e;
+  --color-volt-deep: #2fae18;
+  --color-lime: #d7ff3d;
+
+  --radius-card: 1.125rem;
+
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-spin-slow: spin 26s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+@utility hide-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    background: #fff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-lime);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 5px var(--color-volt);
+  }
+
+  button,
+  [role="button"],
+  summary {
+    cursor: pointer;
+  }
+}
+
+/* Gavetas (carrinho e menu mobile) usam <dialog> nativo: foco preso e Esc de graça. */
+dialog.drawer {
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  height: 100dvh;
+  max-height: 100dvh;
+  width: min(100vw, 28rem);
+  background: #fff;
+  color: var(--color-ink);
+  overscroll-behavior: contain;
+}
+
+dialog.drawer-left {
+  margin: 0 auto 0 0;
+}
+
+dialog.drawer:focus,
+dialog.drawer:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+dialog.drawer::backdrop {
+  background: rgb(13 15 12 / 0.55);
+  backdrop-filter: blur(2px);
+}
+
+dialog.drawer[open] {
+  animation: drawer-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+dialog.drawer-left[open] {
+  animation-name: drawer-in-left;
+}
+
+dialog.drawer[open]::backdrop {
+  animation: fade-in 0.3s ease-out;
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes drawer-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(100deg, var(--color-mist) 40%, #fff 50%, var(--color-mist) 60%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* Texto rico vindo da Shopify (descrições, páginas): HTML já sanitizado no servidor. */
+.rich-text {
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: var(--color-ink-soft);
+}
+.rich-text > * + * {
+  margin-top: 0.9em;
+}
+.rich-text strong,
+.rich-text b {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+.rich-text h2,
+.rich-text h3,
+.rich-text h4 {
+  color: var(--color-ink);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+}
+.rich-text h2 {
+  font-size: 1.125rem;
+}
+.rich-text h3,
+.rich-text h4 {
+  font-size: 0.95rem;
+}
+.rich-text a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.rich-text ul {
+  list-style: none;
+  padding: 0;
+}
+.rich-text ul > li {
+  position: relative;
+  padding-left: 1.4rem;
+}
+.rich-text ul > li + li {
+  margin-top: 0.4em;
+}
+.rich-text ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--color-volt);
+}
+.rich-text ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.rich-text table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+.rich-text th,
+.rich-text td {
+  border: 1px solid var(--color-line);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.rich-text th {
+  background: var(--color-mist);
+  color: var(--color-ink);
+}
+
+/* FAQ e acordeões: <details> nativo, sem JavaScript. */
+details > summary {
+  list-style: none;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] > summary .plus-v {
+  transform: scaleY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
