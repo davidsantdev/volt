@@ -5,13 +5,17 @@
 | Etapa | Itens |
 | --- | --- |
 | Catálogo público da SIHI (aba *Find Products*) | 3.994 |
-| Parecem roupa ou acessório de treino (palavras-chave + categorias) | 185 |
-| Candidatos depois de olhar as fotos uma a uma | 40 |
-| Com cores/tamanhos limpos na Shopify, fotos sem marca de terceiros | **16** |
-| Publicados na loja (somados aos 4 do primeiro lote) | **20** |
+| Parecem roupa de treino (palavras-chave + categorias) | 185 |
+| Parecem acessório ou equipamento de treino (bolsas, toalhas, faixas, garrafas…) | 73 |
+| Abertos no editor da SIHI para conferir fotos, cores e tamanhos (sem enviar nada) | 56 |
+| Com cores/tamanhos limpos na Shopify e fotos sem marca de terceiros | **20** |
+| Publicados na loja (somados aos 4 do primeiro lote) | **24** |
 
 A própria tela da SIHI avisa que o catálogo público é "apenas para referência" e que o gerente de contas tem mais
-produtos. Por isso o caminho para 100+ não é mais automação: é **pedir mais produtos** (veja o fim deste arquivo).
+produtos (a aba *More Products* só leva a uma tela de cadastro de conta, não a um catálogo maior). Por isso o caminho
+para 100+ não é mais automação: é **pedir mais produtos** (veja o fim deste arquivo). Chegar a 100 com este catálogo
+público exigiria vender itens com cores em pinyin, fotos com marca de terceiros ou moda casual que não é de treino,
+o que prejudica a loja.
 
 ## Por que tantos candidatos foram descartados
 

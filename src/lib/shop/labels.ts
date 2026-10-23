@@ -92,6 +92,8 @@ const COLORS: Record<string, ColorInfo> = {
   rose: { label: "Rosa-choque", hex: "#e0457b" },
   aqua: { label: "Turquesa", hex: "#58cfd6" },
   khaki: { label: "Cáqui", hex: "#b9a77a" },
+  khakis: { label: "Creme", hex: "#e8e0cf" },
+  lotuscolor: { label: "Rosa-antigo", hex: "#d9a9b0" },
   purple: { label: "Roxo", hex: "#7b4dff" },
   giantpurple: { label: "Roxo", hex: "#5b2a5e" },
   darkpurple: { label: "Roxo-escuro", hex: "#4a2748" },
