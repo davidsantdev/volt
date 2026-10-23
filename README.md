@@ -4,9 +4,11 @@ Loja virtual *headless*: o catálogo, o carrinho, o checkout e os pedidos ficam 
 vitrine em **Next.js 16**, feita para velocidade e SEO. Os produtos vêm de fornecedores de **dropshipping** conectados
 à Shopify (veja [docs/dropshipping.md](docs/dropshipping.md)).
 
-Recursos de venda (copiados de lojas que vendem, com fontes em [docs/referencias.md](docs/referencias.md)): frete por
-CEP e cupom no carrinho, guia de tamanhos, filtros, busca instantânea, amostras de cor, barra fixa de compra no
-celular, zoom de foto, vistos recentemente, newsletter real e WhatsApp.
+Recursos de venda (copiados de lojas que vendem, como Gymshark, Oner Active e LIVE!, com fontes em
+[docs/referencias.md](docs/referencias.md)): topo e categorias com fotos de modelo, carrosséis de destaques, card com
+segunda foto ao passar o mouse, galeria grande no produto, "Leve 2 e ganhe X%" com barra no carrinho, frete por CEP e
+cupom no carrinho, guia de tamanhos, filtros, busca instantânea, amostras de cor, barra fixa de compra no celular,
+zoom de foto, vistos recentemente, newsletter real e WhatsApp.
 
 Documentação do catálogo: [como foi montado e como chegar a 100+ produtos](docs/catalogo.md) ·
 [planilha de custo x preço](docs/catalogo-produtos.csv) ·
@@ -159,8 +161,8 @@ src/config/site.ts  marca e promessas da loja
 
 ## Status da verificação
 
-Verificado: build de produção, TypeScript e ESLint limpos; fluxo completo no navegador em modo demonstração
-(carrinho, compra rápida, menu, busca, newsletter); layout em desktop e celular; as 17 consultas GraphQL do projeto
-validam contra o esquema oficial da Shopify (versão 2026-10).
-**Ainda não testado com uma loja Shopify real** (faltavam credenciais): o primeiro teste com a sua loja pode revelar
-ajustes de permissão do token ou de configuração de mercado.
+Verificado em 23/10/2026, com a loja real conectada (24 produtos) e em modo demonstração: build de produção,
+TypeScript e ESLint limpos; home, listas, produto, menu do celular, carrosséis, troca de foto no card, carrinho e
+"Leve 2" no navegador, em desktop e celular. Lighthouse (celular, 4G simulado): home 85–87 em desempenho e
+página de produto 95, com 100 em acessibilidade, boas práticas e SEO; no computador, 100 em desempenho.
+**Ainda não testado:** checkout pago de ponta a ponta (falta o gateway com Pix e cartão).
