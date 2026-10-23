@@ -5,6 +5,7 @@ import { CartDrawer } from "@/components/cart/cart-drawer";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { AnnouncementBar } from "@/components/layout/announcement-bar";
 import { Footer } from "@/components/layout/footer";
+import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 import { Header } from "@/components/layout/header";
 import { JsonLd } from "@/components/seo/json-ld";
 import { site } from "@/config/site";
@@ -124,6 +125,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </main>
           <Footer />
           <CartDrawer />
+          <WhatsAppButton />
         </CartProvider>
         <JsonLd data={organization} />
       </body>

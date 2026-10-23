@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { ProductBenefits, ProductDetails, ProductHeader } from "@/components/shop/product-details";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductExperience } from "@/components/shop/product-experience";
+import { RecentlyViewed } from "@/components/shop/recently-viewed";
 import { site } from "@/config/site";
 import { pageMetadata, productJsonLd } from "@/lib/seo";
 import { getProduct, getProductHandles, getRecommendations } from "@/lib/shop";
@@ -96,6 +97,10 @@ export default async function ProductPage({ params }: PageProps<"/produtos/[hand
           </ul>
         </section>
       )}
+
+      <RecentlyViewed
+        current={{ handle: product.handle, title: product.title, price: product.price, image: product.featuredImage }}
+      />
 
       <JsonLd data={productJsonLd(product)} />
     </article>

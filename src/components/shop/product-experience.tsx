@@ -1,11 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { ProductImage } from "@/components/art/product-image";
 import { useCart } from "@/components/cart/cart-provider";
 import { Price } from "@/components/shop/price";
 import { SizeGuideButton } from "@/components/shop/size-guide";
 import { Button } from "@/components/ui/button";
+import { CloseIcon } from "@/components/ui/icons";
 import { QuantityStepper } from "@/components/ui/quantity-stepper";
 import { site } from "@/config/site";
 import { installmentsFor } from "@/lib/promos";
@@ -59,6 +61,77 @@ function valueAvailable(product: Product, selection: Selection, name: string, va
   );
 }
 
+/** Foto em tela cheia com setas (teclado ← →), para ver tecido e caimento de perto. */
+function Lightbox({
+  images,
+  index,
+  title,
+  onIndex,
+  onClose,
+}: {
+  images: ShopImage[];
+  index: number;
+  title: string;
+  onIndex: (index: number) => void;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const image = images[index];
+  const go = (step: number) => onIndex((index + step + images.length) % images.length);
+
+  useEffect(() => {
+    const dialog = ref.current;
+    if (dialog && !dialog.open) dialog.showModal();
+    return () => {
+      if (dialog?.open) dialog.close();
+    };
+  }, []);
+
+  const arrow =
+    "absolute top-1/2 grid size-12 -translate-y-1/2 place-items-center rounded-full bg-white/90 text-2xl font-bold shadow transition-colors hover:bg-white";
+  return (
+    <dialog
+      ref={ref}
+      aria-label={`Fotos de ${title}`}
+      onClose={onClose}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowRight") go(1);
+        if (event.key === "ArrowLeft") go(-1);
+      }}
+      className="m-0 h-dvh max-h-none w-screen max-w-none bg-white p-0 backdrop:bg-black/70"
+    >
+      <div className="flex h-full flex-col">
+        <div className="flex items-center justify-between border-b border-line px-5 py-3">
+          <p className="text-xs font-bold tabular-nums">
+            {index + 1} / {images.length}
+          </p>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fechar fotos"
+            className="grid size-10 place-items-center rounded-full border border-line transition-colors hover:bg-mist"
+          >
+            <CloseIcon className="size-5" />
+          </button>
+        </div>
+        <div className="relative flex-1 bg-mist">
+          <Image src={image.url} alt={image.altText || title} fill sizes="100vw" className="object-contain" />
+          {images.length > 1 && (
+            <>
+              <button type="button" aria-label="Foto anterior" onClick={() => go(-1)} className={`${arrow} left-3`}>
+                ‹
+              </button>
+              <button type="button" aria-label="Próxima foto" onClick={() => go(1)} className={`${arrow} right-3`}>
+                ›
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </dialog>
+  );
+}
+
 function tonesFor(colorway: Colorway): Tone[] {
   return colorway === "volt" ? ["mist", "ink", "lime"] : ["mist", "volt", "lime"];
 }
@@ -90,6 +163,7 @@ export function ProductExperience({
   const [quantity, setQuantity] = useState(1);
   const [picked, setPicked] = useState<{ key: string; index: number } | null>(null);
   const [missing, setMissing] = useState<string[]>([]);
+  const [zoom, setZoom] = useState<number | null>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
   const buyRef = useRef<HTMLDivElement>(null);
   // Barra fixa de compra no celular: aparece quando o botão principal sai da tela (e some sobre o rodapé).
@@ -183,6 +257,14 @@ export function ProductExperience({
             blend={slide.tone !== "ink"}
             className="size-full p-8 sm:p-14"
           />
+          {slide.image && (
+            <button
+              type="button"
+              onClick={() => setZoom(Math.min(activeSlide, slides.length - 1))}
+              aria-label="Ampliar foto"
+              className="absolute inset-0 cursor-zoom-in"
+            />
+          )}
           {discount > 0 && (
             <span className="absolute left-4 top-4 rounded-full bg-ink px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wider text-lime">
               -{discount}%
@@ -337,6 +419,16 @@ export function ProductExperience({
         {benefits}
         {details}
       </div>
+
+      {zoom !== null && product.images.length > 0 && (
+        <Lightbox
+          images={product.images}
+          index={Math.min(zoom, product.images.length - 1)}
+          title={product.title}
+          onIndex={setZoom}
+          onClose={() => setZoom(null)}
+        />
+      )}
 
       {!buyInView && !footerInView && (
         <div

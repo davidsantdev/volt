@@ -66,6 +66,14 @@ export function productJsonLd(product: Product) {
       highPrice: product.maxPrice.amount,
       offerCount: product.variants.length,
       availability: `https://schema.org/${inStock ? "InStock" : "OutOfStock"}`,
+      // Direito de arrependimento (CDC, art. 49): 7 dias, devolução pelo correio e reembolso integral.
+      hasMerchantReturnPolicy: {
+        "@type": "MerchantReturnPolicy",
+        applicableCountry: "BR",
+        returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+        merchantReturnDays: 7,
+        returnMethod: "https://schema.org/ReturnByMail",
+      },
       offers: product.variants.slice(0, 50).map((variant) => ({
         "@type": "Offer",
         url,
